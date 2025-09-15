@@ -91,8 +91,8 @@ automatically-unhide-macos-hidden-apps = false
     # '''
 
     # See: https://nikitabobko.github.io/AeroSpace/commands#layout
-    cmd-slash = 'layout tiles horizontal vertical'
-    cmd-comma = 'layout accordion horizontal vertical'
+    cmd-slash = 'fullscreen'
+    cmd-shift-slash = 'layout tiles horizontal vertical'
 
     # See: https://nikitabobko.github.io/AeroSpace/commands#focus
     cmd-h = 'focus left'
