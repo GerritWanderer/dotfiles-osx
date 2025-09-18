@@ -107,8 +107,8 @@ automatically-unhide-macos-hidden-apps = false
     cmd-shift-p = 'move right'
 
     # See: https://nikitabobko.github.io/AeroSpace/commands#resize
-    # alt-shift-down = 'resize smart -200'
-    # alt-shift-up = 'resize smart +200'
+    cmd-rightSquareBracket = 'resize smart -200'
+    cmd-leftSquareBracket = 'resize smart +200'
 
     # See: https://nikitabobko.github.io/AeroSpace/commands#workspace
     cmd-1 = 'workspace 1'
@@ -123,15 +123,3 @@ automatically-unhide-macos-hidden-apps = false
     cmd-shift-3 = 'move-node-to-workspace 3'
     cmd-shift-4 = 'move-node-to-workspace 4'
     cmd-shift-0 = 'move-node-to-workspace 0:Slack'
-
-    # See: https://nikitabobko.github.io/AeroSpace/commands#mode
-    cmd-shift-semicolon = 'mode service'
-
-# 'service' binding mode declaration.
-# See: https://nikitabobko.github.io/AeroSpace/guide#binding-modes
-[mode.service.binding]
-    esc = ['reload-config', 'mode main']
-    r = ['flatten-workspace-tree', 'mode main'] # reset layout
-    f = ['layout floating tiling', 'mode main'] # Toggle between floating and tiling layout
-    backspace = ['close-all-windows-but-current', 'mode main']
-
