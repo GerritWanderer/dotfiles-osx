@@ -107,8 +107,8 @@ automatically-unhide-macos-hidden-apps = false
     alt-shift-l = 'move right'
 
     # See: https://nikitabobko.github.io/AeroSpace/commands#resize
-    alt-down = 'resize smart -50'
-    alt-up = 'resize smart +50'
+    alt-shift-down = 'resize smart -200'
+    alt-shift-up = 'resize smart +200'
 
     # See: https://nikitabobko.github.io/AeroSpace/commands#workspace
     alt-1 = 'workspace 1'
