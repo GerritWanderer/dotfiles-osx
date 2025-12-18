@@ -1,8 +1,3 @@
-# Default Settings
-font-family = "MesloLGM Nerd Font Mono"
-font-size = "14.5"
-font-thicken = true
-
-config-file = macosx
-config-file = custom
+config-file = ?macosx
 config-file = ?linux
+config-file = custom
