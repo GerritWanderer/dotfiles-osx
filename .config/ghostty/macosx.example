@@ -1,0 +1,4 @@
+maximize = true
+fullscreen = true
+macos-non-native-fullscreen = true
+command = /bin/zsh
