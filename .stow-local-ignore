@@ -2,3 +2,5 @@
 .gitignore
 .config/ghostty/linux.example
 .config/ghostty/macosx.example
+Brewfile
+Installfile
