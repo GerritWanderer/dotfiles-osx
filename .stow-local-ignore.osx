@@ -1,0 +1,7 @@
+.git
+.gitignore
+.config/ghostty/linux.example
+.config/ghostty/macosx.example
+.config/hypr
+Brewfile
+Installfile
