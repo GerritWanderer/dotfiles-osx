@@ -1,5 +1,8 @@
 .git
 .gitignore
+.zshrc.osx
+.zshrc.cachyos
+.bashrc.omarchy
 .config/ghostty/linux.example
 .config/ghostty/macosx.example
 .config/hypr
