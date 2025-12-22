@@ -3,5 +3,6 @@
 .config/ghostty/linux.example
 .config/ghostty/macosx.example
 .config/hypr
+etc/
 Brewfile
 Installfile

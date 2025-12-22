@@ -2,5 +2,6 @@
 .gitignore
 .config/ghostty/linux.example
 .config/ghostty/macosx.example
+etc/
 Brewfile
 Installfile
