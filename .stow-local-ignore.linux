@@ -1,7 +1,21 @@
+# git folders
 .git
 .gitignore
-.config/ghostty/linux.example
-.config/ghostty/macosx.example
-etc/
+
+# shell config files
+.bashrc.omarchy
+.zshrc.cachyos
+.zshrc.osx
+
+# platform specific ghostty files
+.config/ghostty/macosx
+
+# platform specific stow files
+.stow-local-ignore.linux
+.stow-local-ignore.osx
+
+# misc
+README.md
 Brewfile
 Installfile
+etc

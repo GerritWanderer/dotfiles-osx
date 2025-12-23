@@ -1,11 +1,22 @@
+# git folders
 .git
 .gitignore
-.zshrc.osx
-.zshrc.cachyos
+
+# shell config files
 .bashrc.omarchy
-.config/ghostty/linux.example
-.config/ghostty/macosx.example
+.zshrc.cachyos
+.zshrc.osx
+
+# platform specific ghostty and hypr files
 .config/hypr
-etc/
+.config/ghostty/linux
+
+# platform specific stow files
+.stow-local-ignore.linux
+.stow-local-ignore.osx
+
+# misc
+README.md
 Brewfile
 Installfile
+etc
