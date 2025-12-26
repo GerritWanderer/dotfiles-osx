@@ -1,6 +1,10 @@
-# Default Settings
+# Font Settings
 font-family = "FiraCode Nerd Font Mono"
 font-size = "13"
-font-thicken = true
 
+# Appearance
+window-padding-x = 10
+window-padding-y = 5
+
+# Shell
 command = /bin/zsh

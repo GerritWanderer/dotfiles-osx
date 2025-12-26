@@ -1,10 +1,15 @@
-# Default Settings
+# Font Settings
 font-family = "FiraCode Nerd Font Mono"
 font-size = "14.5"
 font-thicken = true
 font-thicken-strength = 200
 
+# Appearance
 maximize = true
 fullscreen = true
 macos-non-native-fullscreen = padded-notch
+window-padding-x = 10
+window-padding-y = 5
+
+# Shell
 command = /bin/zsh
