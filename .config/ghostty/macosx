@@ -13,3 +13,10 @@ window-padding-y = 5
 
 # Shell
 command = /bin/zsh
+shell-integration = zsh
+
+clipboard-read = allow
+clipboard-write = allow
+theme = TokyoNight
+
+config-file = keybindings
