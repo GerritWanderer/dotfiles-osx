@@ -7,6 +7,15 @@
 -- Or remove existing autocmds by their group name (which is prefixed with `lazyvim_` for the defaults)
 -- e.g. vim.api.nvim_del_augroup_by_name("lazyvim_wrap_spell")
 
+-- Disable diagnostics for markdown files
+vim.api.nvim_create_autocmd("FileType", {
+	group = vim.api.nvim_create_augroup("markdown_no_diagnostics", { clear = true }),
+	pattern = { "markdown" },
+	callback = function()
+		vim.diagnostic.enable(false, { bufnr = 0 })
+	end,
+})
+
 -- Prevent duplicate ruby_lsp clients
 vim.api.nvim_create_autocmd("LspAttach", {
 	group = vim.api.nvim_create_augroup("ruby_lsp_dedupe", { clear = true }),
