@@ -102,7 +102,6 @@ source $ZSH/oh-my-zsh.sh
 # Example aliases
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
-alias lvim='NVIM_APPNAME="lvim" nvim'
 
 # Oh my posh setup
 eval "$(oh-my-posh init zsh --config ~/dotfiles/.config/oh-my-posh/catppuccin_mocha.omp.json)"

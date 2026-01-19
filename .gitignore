@@ -1,2 +1,3 @@
 .zshrc
 .stow-local-ignore
+.config/ghostty/config
