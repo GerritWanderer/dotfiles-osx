@@ -188,7 +188,7 @@ sudo setcap 'CAP_SYS_NICE=eip' "$(command -v gamescope)"
 
 # All done
 echo "All done, example:"
-echo "- Launch parameters: gamescope -w 6144 -h 2560 -W 6144 -H 2560 -f -b --backend sdl -s 0.8 --force-grab-cursor --generate-drm-mode fixed --rt -- %command%"
+echo "- Launch parameters: gamescope -w 2560 -h 1440 -W 2560 -H 1440 -f -b --backend sdl -s 0.8 --force-grab-cursor --generate-drm-mode fixed --rt -- %command%"
 echo "- Set compatibility to Proton-GE"
 echo ""
 echo "- Modify the gamescope parameters to match your setup (adaptive sync, resolution, hdr, use mangohud, etc)"

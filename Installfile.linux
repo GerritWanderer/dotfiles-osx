@@ -1,5 +1,5 @@
-sh -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+pacman -S zsh
+yay -S claude-desktop-bin lowfi
 sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 sh -c "$(curl -fsSL https://ohmyposh.dev/install.sh)"
-sh -c "$(curl -fsSL https://mise.run)"
 sh -c "$(curl -fsSL https://claude.ai/install.sh)"
