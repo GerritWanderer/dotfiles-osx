@@ -52,7 +52,8 @@ yay -S --noconfirm gamemode lib32-gamemode gamescope mangohud lib32-mangohud pro
 
 # install python modules the build process needs
 # and apparently vdf and pillow are neede for it to run
-$(which python) -m pip install installer wheel setuptools setuptools-scm build vdf pillow
+sudo pacman -S python-pip
+sudo pacman -S python-installer python-wheel python-setuptools python-setuptools-scm python-build python-vdf python-pillow
 
 PKGNAME="protontricks-git"
 AUR_URL="https://aur.archlinux.org/${PKGNAME}.git"
