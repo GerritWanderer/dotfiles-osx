@@ -69,4 +69,4 @@ alias t='tmux attach || tmux new -s Work'
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 eval "$(oh-my-posh init zsh --config /home/gerrit/.cache/oh-my-posh/themes/catppuccin_mocha.omp.json)"
-eval "$(/path/to/mise activate zsh)"
+eval "$(mise activate zsh)"
