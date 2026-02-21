@@ -1,0 +1,4 @@
+#!/bin/bash
+xhost +local:root
+sudo /home/gerrit/Documents/OCCT
+xhost -local:root
