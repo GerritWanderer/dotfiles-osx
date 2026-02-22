@@ -68,5 +68,8 @@ alias t='tmux attach || tmux new -s Work'
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
+# Word deletion: ctrl+w and ctrl+backspace (ghostty sends \x17 for both)
+bindkey "^H" backward-delete-word
+
 eval "$(oh-my-posh init zsh --config /home/gerrit/.cache/oh-my-posh/themes/catppuccin_mocha.omp.json)"
 eval "$(mise activate zsh)"
