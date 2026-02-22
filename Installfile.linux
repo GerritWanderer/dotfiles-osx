@@ -1,5 +1,19 @@
-pacman -S zsh
-yay -S claude-desktop-bin lowfi
+sudo pacman -S zsh stow direnv keyd
+sudo systemctl enable keyd --now
 sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 sh -c "$(curl -fsSL https://ohmyposh.dev/install.sh)"
 sh -c "$(curl -fsSL https://claude.ai/install.sh)"
+
+yay -S claude-desktop-bin youtube-tui steam
+# youtube-tui might require sudo pacman -S mpv yt-dlp
+
+# Prerequisities for gamescope setup
+sudo pacman -S python-pip
+sudo pacman -S python-installer python-wheel python-setuptools python-setuptools-scm python-build python-vdf python-pillow
+# launch gamescope script
+
+sudo pacman -S lact
+sudo systemctl enable --now lactd
+sudo pacman -S liquidctl
+Download OCCT and install together with xorg-xhost
+
