@@ -1,1 +1,6 @@
-{}
+{
+  "cssTheme": "Tokyo Night Simple",
+  "enabledCssSnippets": [
+    "colored-sidebar"
+  ]
+}

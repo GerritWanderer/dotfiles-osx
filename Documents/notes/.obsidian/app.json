@@ -1,1 +1,7 @@
-{}
+{
+  "openBehavior": "daily",
+  "newFileLocation": "folder",
+  "newFileFolderPath": "01-Wildflowers",
+  "attachmentFolderPath": "99-extras/assets",
+  "trashOption": "local"
+}
