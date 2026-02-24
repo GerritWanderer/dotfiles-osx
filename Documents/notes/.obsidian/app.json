@@ -3,5 +3,12 @@
   "newFileLocation": "folder",
   "newFileFolderPath": "01-Wildflowers",
   "attachmentFolderPath": "99-extras/assets",
-  "trashOption": "local"
+  "trashOption": "local",
+  "livePreview": true,
+  "foldHeading": true,
+  "tabSize": 2,
+  "userIgnoreFilters": [
+    "99-extras/"
+  ],
+  "showInlineTitle": false
 }
