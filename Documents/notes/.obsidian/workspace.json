@@ -27,8 +27,9 @@
     "type": "split",
     "children": [
       {
-        "id": "3b61069171e87969",
+        "id": "37215fe340d83f2c",
         "type": "tabs",
+        "dimension": 74.2816091954023,
         "children": [
           {
             "id": "7b2650580bc3486b",
@@ -41,6 +42,23 @@
               },
               "icon": "lucide-folder-closed",
               "title": "Files"
+            }
+          }
+        ]
+      },
+      {
+        "id": "f4c836e0ab37619c",
+        "type": "tabs",
+        "dimension": 25.718390804597703,
+        "children": [
+          {
+            "id": "1f6cd9ccf299e204",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {},
+              "icon": "lucide-bookmark",
+              "title": "Bookmarks"
             }
           },
           {
@@ -59,18 +77,9 @@
               "icon": "lucide-search",
               "title": "Search"
             }
-          },
-          {
-            "id": "1f6cd9ccf299e204",
-            "type": "leaf",
-            "state": {
-              "type": "bookmarks",
-              "state": {},
-              "icon": "lucide-bookmark",
-              "title": "Bookmarks"
-            }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "horizontal",
