@@ -66,6 +66,7 @@ Config.leader_group_clues = {
   { mode = 'n', keys = '<Leader>l', desc = '+Language' },
   { mode = 'n', keys = '<Leader>m', desc = '+Map' },
   { mode = 'n', keys = '<Leader>o', desc = '+Other' },
+  { mode = 'n', keys = '<Leader>q', desc = '+Quit' },
   { mode = 'n', keys = '<Leader>s', desc = '+Session' },
   { mode = 'n', keys = '<Leader>t', desc = '+Terminal' },
   { mode = 'n', keys = '<Leader>v', desc = '+Visits' },
@@ -123,8 +124,8 @@ nmap_leader('fc', '<Cmd>Pick git_commits<CR>',                  'Commits (all)')
 nmap_leader('fC', '<Cmd>Pick git_commits path="%"<CR>',         'Commits (buf)')
 nmap_leader('fd', '<Cmd>Pick diagnostic scope="all"<CR>',       'Diagnostic workspace')
 nmap_leader('fD', '<Cmd>Pick diagnostic scope="current"<CR>',   'Diagnostic buffer')
-nmap_leader('ff', '<Cmd>Pick files<CR>',                        'Files')
-nmap_leader('fg', '<Cmd>Pick grep_live<CR>',                    'Grep live')
+nmap_leader(' ', '<Cmd>Pick files<CR>',                         'Files')
+nmap_leader('/', '<Cmd>Pick grep_live<CR>',                     'Grep live (cwd)')
 nmap_leader('fG', '<Cmd>Pick grep pattern="<cword>"<CR>',       'Grep current word')
 nmap_leader('fh', '<Cmd>Pick help<CR>',                         'Help tags')
 nmap_leader('fH', '<Cmd>Pick hl_groups<CR>',                    'Highlight groups')
@@ -195,6 +196,9 @@ nmap_leader('mf', '<Cmd>lua MiniMap.toggle_focus()<CR>', 'Focus (toggle)')
 nmap_leader('mr', '<Cmd>lua MiniMap.refresh()<CR>',      'Refresh')
 nmap_leader('ms', '<Cmd>lua MiniMap.toggle_side()<CR>',  'Side (toggle)')
 nmap_leader('mt', '<Cmd>lua MiniMap.toggle()<CR>',       'Toggle')
+
+-- q is for 'Quit'
+nmap_leader('qq', '<Cmd>quitall<CR>', 'Quit Neovim')
 
 -- o is for 'Other'. Common usage:
 -- - `<Leader>oz` - toggle between "zoomed" and regular view of current buffer

@@ -55,6 +55,10 @@ now_if_args(function()
     'lua',
     'vimdoc',
     'markdown',
+    -- JavaScript / TypeScript
+    'javascript',
+    'typescript',
+    'tsx',
     -- Add here more languages with which you want to use tree-sitter
     -- To see available languages:
     -- - Execute `:=require('nvim-treesitter').get_available()`
@@ -99,7 +103,11 @@ now_if_args(function()
   -- Use `:h vim.lsp.enable()` to automatically enable language server based on
   -- the rules provided by 'nvim-lspconfig'.
   -- Use `:h vim.lsp.config()` or 'after/lsp/' directory to configure servers.
-  vim.lsp.enable({ 'ts_ls', 'eslint' })
+  vim.lsp.enable({
+    'lua_ls',    -- Install: brew install lua-language-server
+    'ts_ls',     -- Install: npm install -g typescript typescript-language-server
+    'eslint',    -- Install: npm install -g vscode-langservers-extracted
+  })
 end)
 
 -- Formatting =================================================================
