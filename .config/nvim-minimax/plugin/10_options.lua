@@ -46,6 +46,7 @@ vim.o.pumheight      = 10         -- Make popup menu smaller
 vim.o.pummaxwidth    = 100        -- Make popup menu not too wide
 vim.o.ruler          = false      -- Don't show cursor coordinates
 vim.o.shortmess      = 'CFOSWaco' -- Disable some built-in completion messages
+vim.o.cmdheight      = 0          -- Hide cmdline bar (used by noice.nvim)
 vim.o.showmode       = false      -- Don't show mode in command line
 vim.o.signcolumn     = 'yes'      -- Always show signcolumn (less flicker)
 vim.o.splitbelow     = true       -- Horizontal splits will be below

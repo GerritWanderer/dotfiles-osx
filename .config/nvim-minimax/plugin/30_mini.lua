@@ -407,11 +407,6 @@ later(function()
   })
 end)
 
--- Command line tweaks. Improves command line editing with:
--- - Autocompletion. Basically an automated `:h cmdline-completion`.
--- - Autocorrection of words as-you-type. Like `:W`->`:w`, `:lau`->`:lua`, etc.
--- - Autopeek command range (like line number at the start) as-you-type.
-later(function() require('mini.cmdline').setup() end)
 
 -- Tweak and save any color scheme. Contains utility functions to work with
 -- color spaces and color schemes. Example usage:

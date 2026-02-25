@@ -10,7 +10,7 @@
 
 -- Make concise helpers for installing/adding plugins in two stages
 local add = vim.pack.add
-local now_if_args, later = Config.now_if_args, Config.later
+local now, now_if_args, later = Config.now, Config.now_if_args, Config.later
 
 -- Tree-sitter ================================================================
 
@@ -149,6 +149,36 @@ end)
 -- 'mini.snippets' is designed to work with it as seamlessly as possible.
 -- See `:h MiniSnippets.gen_loader.from_lang()`.
 later(function() add({ 'https://github.com/rafamadriz/friendly-snippets' }) end)
+
+-- UI enhancements ============================================================
+
+-- Replaces mini.cmdline with a floating cmdline, search, and message UI.
+-- The bottom cmdline bar is hidden via cmdheight=0 in 'plugin/10_options.lua'.
+-- mini.notify is kept for notifications (<Leader>en for history still works).
+--
+-- See also:
+-- - https://github.com/folke/noice.nvim
+now(function()
+  add({
+    'https://github.com/folke/noice.nvim',
+    'https://github.com/MunifTanjim/nui.nvim',
+  })
+  require('noice').setup({
+    -- Keep mini.notify for notifications
+    notify = { enabled = false },
+    lsp = {
+      override = {
+        ['vim.lsp.util.convert_input_to_markdown_lines'] = true,
+        ['vim.lsp.util.stylize_markdown'] = true,
+      },
+    },
+    presets = {
+      bottom_search         = true,  -- classic bottom search bar
+      command_palette       = true,  -- cmdline and popupmenu positioned together
+      long_message_to_split = true,  -- long messages go to a split
+    },
+  })
+end)
 
 -- Jump/navigation ============================================================
 
