@@ -198,8 +198,7 @@ end)
 -- Manipulate files and directories by editing text as regular buffers.
 --
 -- Example usage:
--- - `<Leader>ed` - open current working directory
--- - `<Leader>ef` - open directory of current file (needs to be present on disk)
+-- - `<Leader>e` - open current working directory
 --
 -- Basic navigation:
 -- - `l` - go in entry at cursor: navigate into directory or open file
