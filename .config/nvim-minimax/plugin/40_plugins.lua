@@ -158,6 +158,85 @@ end)
 -- See `:h MiniSnippets.gen_loader.from_lang()`.
 later(function() add({ 'https://github.com/rafamadriz/friendly-snippets' }) end)
 
+-- Neo-tree ==================================================================
+
+-- A file tree explorer inspired by NERDTree. Provides a panel-based view of
+-- the filesystem, open buffers, and git status. Unlike 'mini.files' (which
+-- uses a column/Miller-view), neo-tree is a more traditional tree explorer.
+--
+-- Dependencies:
+--   - plenary.nvim: common Lua utilities used by many plugins
+--   - nui.nvim:     UI component library (popups, layouts)
+--   - mini.icons:   already set up in 'plugin/30_mini.lua'; neo-tree picks it
+--                   up automatically when it is loaded
+later(function()
+  add({
+    'https://github.com/nvim-neo-tree/neo-tree.nvim',
+    'https://github.com/nvim-lua/plenary.nvim',
+    'https://github.com/MunifTanjim/nui.nvim',
+  })
+
+  require('neo-tree').setup({
+    sources = { 'filesystem', 'buffers', 'git_status' },
+    open_files_do_not_replace_types = { 'terminal', 'qf' },
+
+    filesystem = {
+      bind_to_cwd = false,
+      use_libuv_file_watcher = true,
+      follow_current_file = { enabled = true, leave_dirs_open = true },
+      filtered_items = {
+        visible = true,
+        show_hidden_count = true,
+        hide_dotfiles = false,
+        hide_gitignored = true,
+        hide_by_name = { 'node_modules', 'git' },
+        never_show = { '.git' },
+      },
+    },
+
+    buffers = {
+      follow_current_file = { enabled = true, leave_dirs_open = true },
+    },
+
+    window = {
+      mappings = {
+        ['<space>'] = 'none',
+        ['s']       = false,
+        ['h']       = 'close_node',
+        ['l']       = function(state)
+          local node = state.tree:get_node()
+          if node.type == 'directory' then
+            state.commands['toggle_node'](state)
+          else
+            local neo_win = vim.api.nvim_get_current_win()
+            state.commands['open'](state)
+            vim.api.nvim_set_current_win(neo_win)
+          end
+        end,
+        ['<cr>']    = function(state)
+          state.commands['open'](state)
+          require('neo-tree.command').execute({ action = 'close' })
+        end,
+      },
+    },
+
+    default_component_configs = {
+      indent = {
+        with_expanders       = true,
+        expander_collapsed   = '',
+        expander_expanded    = '',
+        expander_highlight   = 'NeoTreeExpander',
+      },
+      git_status = {
+        symbols = {
+          unstaged = '󰄱',
+          staged   = '',
+        },
+      },
+    },
+  })
+end)
+
 -- UI enhancements ============================================================
 
 -- Replaces mini.cmdline with a floating cmdline, search, and message UI.

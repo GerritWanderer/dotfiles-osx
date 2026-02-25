@@ -101,7 +101,8 @@ nmap_leader('bs', new_scratch_buffer,                            'Scratch')
 nmap_leader('bw', '<Cmd>lua MiniBufremove.wipeout()<CR>',        'Wipeout')
 nmap_leader('bW', '<Cmd>lua MiniBufremove.wipeout(0, true)<CR>', 'Wipeout!')
 
-nmap_leader('e', '<Cmd>lua MiniFiles.open()<CR>', 'Explorer')
+nmap_leader('e', '<Cmd>Neotree toggle source=filesystem<CR>', 'Explorer (neo-tree)')
+nmap_leader('E', '<Cmd>Neotree reveal<CR>',                   'Explorer reveal file')
 
 -- f is for 'Fuzzy Find'. Common usage:
 -- - `<Leader>ff` - find files; for best performance requires `ripgrep`
