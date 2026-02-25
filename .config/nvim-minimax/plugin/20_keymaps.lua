@@ -14,8 +14,15 @@ local nmap = function(lhs, rhs, desc)
   vim.keymap.set('n', lhs, rhs, { desc = desc })
 end
 
+-- Clear hlsearch on Escape
+nmap('<Esc>', '<Esc><Cmd>nohlsearch<CR>', 'Escape and clear hlsearch')
+
 -- Save file
 vim.keymap.set({ 'n', 'i', 'x' }, '<C-s>', '<Cmd>write<CR><Esc>', { desc = 'Save file' })
+
+-- Buffer navigation
+nmap('<S-h>', '<Cmd>bprevious<CR>', 'Prev buffer')
+nmap('<S-l>', '<Cmd>bnext<CR>',     'Next buffer')
 
 -- Paste linewise before/after current line
 -- Usage: `yiw` to yank a word and `]p` to put it on the next line.
@@ -156,22 +163,29 @@ xmap_leader('gs', '<Cmd>lua MiniGit.show_at_cursor()<CR>', 'Show at selection')
 -- l is for 'Language'. Common usage:
 -- - `<Leader>ld` - show more diagnostic details in a floating window
 -- - `<Leader>lr` - perform rename via LSP
--- - `<Leader>ls` - navigate to source definition of symbol under cursor
---
--- NOTE: most LSP mappings represent a more structured way of replacing built-in
--- LSP mappings (like `:h gra` and others). This is needed because `gr` is mapped
--- by an "replace" operator in 'mini.operators' (which is more commonly used).
-nmap_leader('la', '<Cmd>lua vim.lsp.buf.code_action()<CR>',     'Actions')
-nmap_leader('ld', '<Cmd>lua vim.diagnostic.open_float()<CR>',   'Diagnostic popup')
-nmap_leader('lf', '<Cmd>lua require("conform").format()<CR>',   'Format')
-nmap_leader('li', '<Cmd>lua vim.lsp.buf.implementation()<CR>',  'Implementation')
-nmap_leader('lh', '<Cmd>lua vim.lsp.buf.hover()<CR>',           'Hover')
-nmap_leader('lr', '<Cmd>lua vim.lsp.buf.rename()<CR>',          'Rename')
-nmap_leader('lR', '<Cmd>lua vim.lsp.buf.references()<CR>',      'References')
-nmap_leader('ls', '<Cmd>lua vim.lsp.buf.definition()<CR>',      'Source definition')
-nmap_leader('lt', '<Cmd>lua vim.lsp.buf.type_definition()<CR>', 'Type definition')
+-- - `<Leader>la` - code actions
+nmap_leader('la', '<Cmd>lua vim.lsp.buf.code_action()<CR>',   'Actions')
+nmap_leader('ld', '<Cmd>lua vim.diagnostic.open_float()<CR>', 'Diagnostic popup')
+nmap_leader('lf', '<Cmd>lua require("conform").format()<CR>', 'Format')
+nmap_leader('lr', '<Cmd>lua vim.lsp.buf.rename()<CR>',        'Rename')
 
 xmap_leader('lf', '<Cmd>lua require("conform").format()<CR>', 'Format selection')
+
+-- LSP navigation (LazyVim style). Common usage:
+-- - `gd` - goto definition
+-- - `gr` - references  NOTE: overrides mini.operators replace (`gr`)
+-- - `gI` - goto implementation
+-- - `gy` - goto type definition
+-- - `gD` - goto declaration
+-- - `K`  - hover docs
+-- - `gK` - signature help
+nmap('gd', '<Cmd>lua vim.lsp.buf.definition()<CR>',      'Goto Definition')
+nmap('gr', '<Cmd>lua vim.lsp.buf.references()<CR>',      'References')
+nmap('gI', '<Cmd>lua vim.lsp.buf.implementation()<CR>',  'Goto Implementation')
+nmap('gy', '<Cmd>lua vim.lsp.buf.type_definition()<CR>', 'Goto T[y]pe Definition')
+nmap('gD', '<Cmd>lua vim.lsp.buf.declaration()<CR>',     'Goto Declaration')
+nmap('K',  '<Cmd>lua vim.lsp.buf.hover()<CR>',           'Hover')
+nmap('gK', '<Cmd>lua vim.lsp.buf.signature_help()<CR>',  'Signature Help')
 
 -- m is for 'Map'. Common usage:
 -- - `<Leader>mt` - toggle map from 'mini.map' (closed by default)
