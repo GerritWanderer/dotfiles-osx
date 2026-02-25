@@ -150,6 +150,37 @@ end)
 -- See `:h MiniSnippets.gen_loader.from_lang()`.
 later(function() add({ 'https://github.com/rafamadriz/friendly-snippets' }) end)
 
+-- Jump/navigation ============================================================
+
+-- Fast jump to any visible location. Replaces 'mini.jump2d' with a more
+-- powerful alternative that integrates with search, tree-sitter, and more.
+-- Example usage:
+-- - `<CR>`  - jump to a location by typing its label characters
+-- - `S`     - jump using tree-sitter syntax-aware targets
+-- - `<C-s>` (in command mode) - toggle flash search enhancement
+--
+-- Note: default flash uses `s` which conflicts with 'mini.surround', so
+-- `<CR>` is used instead (matching 'mini.jump2d' default trigger).
+--
+-- See also:
+-- - https://github.com/folke/flash.nvim
+later(function()
+  add({ 'https://github.com/folke/flash.nvim' })
+  require('flash').setup({
+    modes = {
+      -- Don't hijack `/` search by default
+      search = { enabled = false },
+    },
+  })
+  local flash = require('flash')
+  -- `<CR>` mirrors mini.jump2d's default trigger in Normal, Visual, Operator-pending
+  vim.keymap.set({ 'n', 'x', 'o' }, '<CR>', function() flash.jump() end, { desc = 'Flash jump' })
+  -- `S` for tree-sitter aware jumps (capital S doesn't conflict with mini.surround)
+  vim.keymap.set({ 'n', 'x', 'o' }, 'S', function() flash.treesitter() end, { desc = 'Flash treesitter' })
+  -- Toggle flash highlighting in command-line search
+  vim.keymap.set('c', '<C-s>', function() flash.toggle() end, { desc = 'Flash toggle search' })
+end)
+
 -- Honorable mentions =========================================================
 
 -- 'mason-org/mason.nvim' (a.k.a. "Mason") is a great tool (package manager) for
