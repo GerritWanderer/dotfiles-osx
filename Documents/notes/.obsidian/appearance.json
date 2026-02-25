@@ -1,0 +1,8 @@
+{
+  "cssTheme": "Tokyo Night Simple",
+  "enabledCssSnippets": [
+    "colored-sidebar"
+  ],
+  "showViewHeader": false,
+  "showRibbon": true
+}
