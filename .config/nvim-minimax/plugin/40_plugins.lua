@@ -45,6 +45,7 @@ now_if_args(function()
   add({
     'https://github.com/nvim-treesitter/nvim-treesitter',
     'https://github.com/nvim-treesitter/nvim-treesitter-textobjects',
+    'https://github.com/MeanderingProgrammer/treesitter-modules.nvim',
   })
 
   -- Define languages which will have parsers installed and auto enabled
@@ -80,6 +81,19 @@ now_if_args(function()
   end
   local ts_start = function(ev) vim.treesitter.start(ev.buf) end
   Config.new_autocmd('FileType', filetypes, ts_start, 'Start tree-sitter')
+
+  -- Incremental selection: Alt+i to expand node, Alt+o to shrink node
+  require('treesitter-modules').setup({
+    incremental_selection = {
+      enable = true,
+      keymaps = {
+        init_selection    = '<A-i>',
+        node_incremental  = '<A-i>',
+        node_decremental  = '<A-o>',
+        scope_incremental = false,
+      },
+    },
+  })
 end)
 
 -- Language servers ===========================================================
@@ -290,12 +304,8 @@ later(function()
     },
   })
   local flash = require('flash')
-  -- `<CR>` mirrors mini.jump2d's default trigger in Normal, Visual, Operator-pending
-  vim.keymap.set({ 'n', 'x', 'o' }, '<CR>', function() flash.jump() end, { desc = 'Flash jump' })
-  -- `S` for tree-sitter aware jumps (capital S doesn't conflict with mini.surround)
-  vim.keymap.set({ 'n', 'x', 'o' }, 'S', function() flash.treesitter() end, { desc = 'Flash treesitter' })
-  -- Toggle flash highlighting in command-line search
-  vim.keymap.set('c', '<C-s>', function() flash.toggle() end, { desc = 'Flash toggle search' })
+  -- `S` for Flash jumps (capital S doesn't conflict with mini.surround)
+  vim.keymap.set({ 'n', 'x', 'o' }, 'S', function() flash.jump() end, { desc = 'Flash jump' })
 end)
 
 -- Honorable mentions =========================================================
