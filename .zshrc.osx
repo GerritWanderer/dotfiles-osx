@@ -59,7 +59,7 @@ export PROMPT_COMMAND="history -a; $PROMPT_COMMAND"
 
 # Default editor is neovim
 export EDITOR='nvim'
-
+alias lvim="NVIM_APPNAME='nvim-lazyvim' nvim"
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 # Oh my posh setup
