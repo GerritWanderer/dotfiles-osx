@@ -308,6 +308,35 @@ later(function()
   vim.keymap.set({ 'n', 'x', 'o' }, 'S', function() flash.jump() end, { desc = 'Flash jump' })
 end)
 
+-- Telescope ==================================================================
+
+-- Fuzzy finder over lists. Replaces 'mini.pick' for all picker workflows.
+-- Use `<Leader>f*` mappings defined in 'plugin/20_keymaps.lua'.
+--
+-- See also:
+-- - https://github.com/nvim-telescope/telescope.nvim
+-- - `:h telescope.builtin` - list of built-in pickers
+later(function()
+  add({
+    'https://github.com/nvim-telescope/telescope.nvim',
+    'https://github.com/nvim-lua/plenary.nvim',
+    'https://github.com/nvim-tree/nvim-web-devicons',
+  })
+  require('telescope').setup({
+    defaults = {
+      sorting_strategy = 'ascending',
+      layout_config = { prompt_position = 'top' },
+      mappings = {
+        i = { ['<C-n>'] = 'cycle_history_next', ['<C-p>'] = 'cycle_history_prev', ['<C-g>'] = 'to_fuzzy_refine' },
+      },
+    },
+    pickers = {
+      find_files = { hidden = true },
+      live_grep  = { additional_args = { '--hidden' } },
+    },
+  })
+end)
+
 -- Honorable mentions =========================================================
 
 -- 'mason-org/mason.nvim' (a.k.a. "Mason") is a great tool (package manager) for

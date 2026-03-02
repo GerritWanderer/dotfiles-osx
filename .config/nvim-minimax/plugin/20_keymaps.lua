@@ -109,36 +109,36 @@ nmap_leader('E', '<Cmd>Neotree reveal<CR>',                   'Explorer reveal f
 -- - `<Leader>fg` - find inside files; requires `ripgrep`
 -- - `<Leader>fh` - find help tag
 -- - `<Leader>fr` - resume latest picker
--- - `<Leader>fv` - all visited paths; requires 'mini.visits'
 --
--- All these use 'mini.pick'. See `:h MiniPick-overview` for an overview.
-local pick_added_hunks_buf = '<Cmd>Pick git_hunks path="%" scope="staged"<CR>'
-local pick_workspace_symbols_live = '<Cmd>Pick lsp scope="workspace_symbol_live"<CR>'
+-- All these use 'telescope.nvim'. See `:h telescope.builtin` for an overview.
+local telescope = function(picker, opts)
+  return function() require('telescope.builtin')[picker](opts) end
+end
 
-nmap_leader('f/', '<Cmd>Pick history scope="/"<CR>',            '"/" history')
-nmap_leader('f:', '<Cmd>Pick history scope=":"<CR>',            '":" history')
-nmap_leader('fa', '<Cmd>Pick git_hunks scope="staged"<CR>',     'Added hunks (all)')
-nmap_leader('fA', pick_added_hunks_buf,                         'Added hunks (buf)')
-nmap_leader('fb', '<Cmd>Pick buffers<CR>',                      'Buffers')
-nmap_leader('fc', '<Cmd>Pick git_commits<CR>',                  'Commits (all)')
-nmap_leader('fC', '<Cmd>Pick git_commits path="%"<CR>',         'Commits (buf)')
-nmap_leader('fd', '<Cmd>Pick diagnostic scope="all"<CR>',       'Diagnostic workspace')
-nmap_leader('fD', '<Cmd>Pick diagnostic scope="current"<CR>',   'Diagnostic buffer')
-nmap_leader(' ', '<Cmd>Pick files<CR>',                         'Files')
-nmap_leader('/', '<Cmd>Pick grep_live<CR>',                     'Grep live (cwd)')
-nmap_leader('fG', '<Cmd>Pick grep pattern="<cword>"<CR>',       'Grep current word')
-nmap_leader('fh', '<Cmd>Pick help<CR>',                         'Help tags')
-nmap_leader('fH', '<Cmd>Pick hl_groups<CR>',                    'Highlight groups')
-nmap_leader('fl', '<Cmd>Pick buf_lines scope="all"<CR>',        'Lines (all)')
-nmap_leader('fL', '<Cmd>Pick buf_lines scope="current"<CR>',    'Lines (buf)')
-nmap_leader('fm', '<Cmd>Pick git_hunks<CR>',                    'Modified hunks (all)')
-nmap_leader('fM', '<Cmd>Pick git_hunks path="%"<CR>',           'Modified hunks (buf)')
-nmap_leader('fr', '<Cmd>Pick resume<CR>',                       'Resume')
-nmap_leader('fR', '<Cmd>Pick lsp scope="references"<CR>',       'References (LSP)')
-nmap_leader('fs', pick_workspace_symbols_live,                  'Symbols workspace (live)')
-nmap_leader('fS', '<Cmd>Pick lsp scope="document_symbol"<CR>',  'Symbols document')
-nmap_leader('fv', '<Cmd>Pick visit_paths cwd=""<CR>',           'Visit paths (all)')
-nmap_leader('fV', '<Cmd>Pick visit_paths<CR>',                  'Visit paths (cwd)')
+nmap_leader('f/', telescope('search_history'),                           '"/" history')
+nmap_leader('f:', telescope('command_history'),                          '":" history')
+nmap_leader('fa', telescope('git_status'),                               'Added hunks (all)')
+nmap_leader('fA', telescope('git_status'),                               'Added hunks (buf)')
+nmap_leader('fb', telescope('buffers'),                                  'Buffers')
+nmap_leader('fc', telescope('git_commits'),                              'Commits (all)')
+nmap_leader('fC', telescope('git_bcommits'),                             'Commits (buf)')
+nmap_leader('fd', telescope('diagnostics'),                              'Diagnostic workspace')
+nmap_leader('fD', telescope('diagnostics', { bufnr = 0 }),               'Diagnostic buffer')
+nmap_leader(' ', telescope('find_files'),                                'Files')
+nmap_leader('/', telescope('live_grep'),                                 'Grep live (cwd)')
+nmap_leader('fG', telescope('grep_string'),                              'Grep current word')
+nmap_leader('fh', telescope('help_tags'),                                'Help tags')
+nmap_leader('fH', telescope('highlights'),                               'Highlight groups')
+nmap_leader('fl', telescope('live_grep'),                                'Lines (all)')
+nmap_leader('fL', telescope('current_buffer_fuzzy_find'),                'Lines (buf)')
+nmap_leader('fm', telescope('git_status'),                               'Modified hunks (all)')
+nmap_leader('fM', telescope('git_status'),                               'Modified hunks (buf)')
+nmap_leader('fr', telescope('resume'),                                   'Resume')
+nmap_leader('fR', telescope('lsp_references'),                           'References (LSP)')
+nmap_leader('fs', telescope('lsp_dynamic_workspace_symbols'),            'Symbols workspace (live)')
+nmap_leader('fS', telescope('lsp_document_symbols'),                     'Symbols document')
+nmap_leader('fv', telescope('oldfiles'),                                 'Visit paths (all)')
+nmap_leader('fV', telescope('find_files'),                               'Visit paths (cwd)')
 
 -- g is for 'Git'. Common usage:
 -- - `<Leader>gs` - show information at cursor
@@ -225,16 +225,8 @@ nmap_leader('tt', '<Cmd>vertical term<CR>',   'Terminal (vertical)')
 -- - `<Leader>vv` - add    "core" label to current file.
 -- - `<Leader>vV` - remove "core" label to current file.
 -- - `<Leader>vc` - pick among all files with "core" label.
-local make_pick_core = function(cwd, desc)
-  return function()
-    local sort_latest = MiniVisits.gen_sort.default({ recency_weight = 1 })
-    local local_opts = { cwd = cwd, filter = 'core', sort = sort_latest }
-    MiniExtra.pickers.visit_paths(local_opts, { source = { name = desc } })
-  end
-end
-
-nmap_leader('vc', make_pick_core('',  'Core visits (all)'),       'Core visits (all)')
-nmap_leader('vC', make_pick_core(nil, 'Core visits (cwd)'),       'Core visits (cwd)')
+nmap_leader('vc', telescope('oldfiles'),                               'Core visits (all)')
+nmap_leader('vC', telescope('find_files'),                             'Core visits (cwd)')
 nmap_leader('vv', '<Cmd>lua MiniVisits.add_label("core")<CR>',    'Add "core" label')
 nmap_leader('vV', '<Cmd>lua MiniVisits.remove_label("core")<CR>', 'Remove "core" label')
 nmap_leader('vl', '<Cmd>lua MiniVisits.add_label()<CR>',          'Add label')
