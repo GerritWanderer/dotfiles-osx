@@ -346,6 +346,71 @@ end)
 -- The caveat is that these programs will be set up to be mostly used inside Neovim.
 -- If you need them to work elsewhere, consider using other package managers.
 --
+-- Scratch buffer ==============================================================
+
+-- A persistent floating scratch buffer, toggled with <leader>.
+-- Content is saved to disk and survives across Neovim sessions.
+now(function()
+  local scratch_buf = nil
+  local scratch_file = vim.fn.stdpath('data') .. '/scratch.ts'
+  local scratch_augroup = vim.api.nvim_create_augroup('MiniMaxScratch', { clear = true })
+
+  -- Scan open windows to find one showing the scratch buffer.
+  local find_scratch_win = function()
+    if scratch_buf == nil or not vim.api.nvim_buf_is_valid(scratch_buf) then return nil end
+    for _, win in ipairs(vim.api.nvim_list_wins()) do
+      if vim.api.nvim_win_get_buf(win) == scratch_buf then return win end
+    end
+  end
+
+  Config.open_scratch = function()
+    -- Toggle: close if already visible in any window
+    local existing_win = find_scratch_win()
+    if existing_win ~= nil then
+      vim.api.nvim_win_close(existing_win, false)
+      return
+    end
+
+    -- Reuse the in-session buffer or open the persistent file into a new one
+    if scratch_buf == nil or not vim.api.nvim_buf_is_valid(scratch_buf) then
+      scratch_buf = vim.fn.bufadd(scratch_file)
+      vim.fn.bufload(scratch_buf)
+      vim.bo[scratch_buf].buflisted = false
+      vim.bo[scratch_buf].filetype  = 'typescript'
+
+      -- Register auto-save and q keymap once per buffer lifetime, not per window open.
+      vim.api.nvim_create_autocmd('BufLeave', {
+        group    = scratch_augroup,
+        buffer   = scratch_buf,
+        callback = function()
+          if vim.bo[scratch_buf].modified then
+            vim.api.nvim_buf_call(scratch_buf, function() vim.cmd('silent write') end)
+          end
+        end,
+      })
+      vim.keymap.set('n', 'q', function()
+        local win = find_scratch_win()
+        if win ~= nil then vim.api.nvim_win_close(win, false) end
+      end, { buffer = scratch_buf, nowait = true, desc = 'Close scratch' })
+    end
+
+    -- Open centred floating window
+    local width  = math.floor(vim.o.columns * 0.8)
+    local height = math.floor(vim.o.lines   * 0.8)
+    vim.api.nvim_open_win(scratch_buf, true, {
+      relative  = 'editor',
+      width     = width,
+      height    = height,
+      row       = math.floor((vim.o.lines   - height) / 2),
+      col       = math.floor((vim.o.columns - width)  / 2),
+      style     = 'minimal',
+      border    = 'rounded',
+      title     = ' Scratch ',
+      title_pos = 'center',
+    })
+  end
+end)
+
 -- You can use it like so:
 -- now_if_args(function()
 --   add({ 'https://github.com/mason-org/mason.nvim' })
