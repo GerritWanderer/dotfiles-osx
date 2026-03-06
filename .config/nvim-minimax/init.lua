@@ -112,6 +112,70 @@ Config.new_autocmd = function(event, pattern, callback, desc)
   vim.api.nvim_create_autocmd(event, opts)
 end
 
+-- Factory for persistent floating-window modals (scratch, daily note, lazygit, …).
+-- Returns a toggle function that opens/closes a centred floating window backed by
+-- a single reused buffer. Call it to open; call it again to hide (buffer lives on).
+--
+-- Options:
+--   title              string | fn()→string  Window title bar text
+--   size               number?               Screen fraction 0..1 (default 0.8)
+--   create_buf         fn(modal)→bufnr       Called once to create the buffer.
+--                                            modal = { close, invalidate }
+--   should_invalidate  fn(buf)→bool?         Return true to recreate buf (e.g. date change)
+--   on_open            fn(buf, win, modal)?  Called after the window opens
+Config.make_modal = function(opts)
+  local buf = nil
+
+  local find_win = function()
+    if buf == nil or not vim.api.nvim_buf_is_valid(buf) then return nil end
+    for _, win in ipairs(vim.api.nvim_list_wins()) do
+      if vim.api.nvim_win_get_buf(win) == buf then return win end
+    end
+  end
+
+  -- modal helpers passed into create_buf / on_open
+  local modal = {
+    close     = function() local w = find_win(); if w then vim.api.nvim_win_close(w, false) end end,
+    invalidate = function() buf = nil end,
+  }
+
+  return function()
+    -- Toggle off: hide window (buffer stays alive)
+    local existing_win = find_win()
+    if existing_win ~= nil then
+      vim.api.nvim_win_close(existing_win, false)
+      return
+    end
+
+    -- Recreate buf when caller signals it is stale (e.g. date changed)
+    if buf ~= nil and opts.should_invalidate and opts.should_invalidate(buf) then
+      buf = nil
+    end
+
+    if buf == nil or not vim.api.nvim_buf_is_valid(buf) then
+      buf = opts.create_buf(modal)
+    end
+
+    local size   = opts.size or 0.8
+    local width  = math.floor(vim.o.columns * size)
+    local height = math.floor(vim.o.lines   * size)
+    local title  = type(opts.title) == 'function' and opts.title() or opts.title
+    local win    = vim.api.nvim_open_win(buf, true, {
+      relative  = 'editor',
+      width     = width,
+      height    = height,
+      row       = math.floor((vim.o.lines   - height) / 2),
+      col       = math.floor((vim.o.columns - width)  / 2),
+      style     = 'minimal',
+      border    = 'rounded',
+      title     = ' ' .. title .. ' ',
+      title_pos = 'center',
+    })
+
+    if opts.on_open then opts.on_open(buf, win, modal) end
+  end
+end
+
 -- Define custom `vim.pack.add()` hook helper. See `:h vim.pack-events`.
 -- Example usage: see 'plugin/40_plugins.lua'.
 Config.on_packchanged = function(plugin_name, kinds, callback, desc)

@@ -351,74 +351,38 @@ end)
 -- A persistent floating scratch buffer, toggled with <leader>.
 -- Content is saved to disk and survives across Neovim sessions.
 now(function()
-  local scratch_buf = nil
-  local scratch_file = vim.fn.stdpath('data') .. '/scratch.ts'
+  local scratch_file   = vim.fn.stdpath('data') .. '/scratch.ts'
   local scratch_augroup = vim.api.nvim_create_augroup('MiniMaxScratch', { clear = true })
 
-  -- Scan open windows to find one showing the scratch buffer.
-  local find_scratch_win = function()
-    if scratch_buf == nil or not vim.api.nvim_buf_is_valid(scratch_buf) then return nil end
-    for _, win in ipairs(vim.api.nvim_list_wins()) do
-      if vim.api.nvim_win_get_buf(win) == scratch_buf then return win end
-    end
-  end
-
-  Config.open_scratch = function()
-    -- Toggle: close if already visible in any window
-    local existing_win = find_scratch_win()
-    if existing_win ~= nil then
-      vim.api.nvim_win_close(existing_win, false)
-      return
-    end
-
-    -- Reuse the in-session buffer or open the persistent file into a new one
-    if scratch_buf == nil or not vim.api.nvim_buf_is_valid(scratch_buf) then
-      scratch_buf = vim.fn.bufadd(scratch_file)
-      vim.fn.bufload(scratch_buf)
-      vim.bo[scratch_buf].buflisted = false
-      vim.bo[scratch_buf].filetype  = 'typescript'
-
-      -- Register auto-save and q keymap once per buffer lifetime, not per window open.
+  Config.open_scratch = Config.make_modal({
+    title = 'Scratch',
+    create_buf = function(modal)
+      local b = vim.fn.bufadd(scratch_file)
+      vim.fn.bufload(b)
+      vim.bo[b].buflisted = false
+      vim.bo[b].filetype  = 'typescript'
       vim.api.nvim_create_autocmd('BufLeave', {
         group    = scratch_augroup,
-        buffer   = scratch_buf,
+        buffer   = b,
         callback = function()
-          if vim.bo[scratch_buf].modified then
-            vim.api.nvim_buf_call(scratch_buf, function() vim.cmd('silent write') end)
+          if vim.bo[b].modified then
+            vim.api.nvim_buf_call(b, function() vim.cmd('silent write') end)
           end
         end,
       })
-      vim.keymap.set('n', 'q', function()
-        local win = find_scratch_win()
-        if win ~= nil then vim.api.nvim_win_close(win, false) end
-      end, { buffer = scratch_buf, nowait = true, desc = 'Close scratch' })
-    end
-
-    -- Open centred floating window
-    local width  = math.floor(vim.o.columns * 0.8)
-    local height = math.floor(vim.o.lines   * 0.8)
-    vim.api.nvim_open_win(scratch_buf, true, {
-      relative  = 'editor',
-      width     = width,
-      height    = height,
-      row       = math.floor((vim.o.lines   - height) / 2),
-      col       = math.floor((vim.o.columns - width)  / 2),
-      style     = 'minimal',
-      border    = 'rounded',
-      title     = ' Scratch ',
-      title_pos = 'center',
-    })
-  end
+      vim.keymap.set('n', 'q', modal.close, { buffer = b, nowait = true, desc = 'Close scratch' })
+      return b
+    end,
+  })
 end)
 
 -- Daily note ==================================================================
 
 -- Open today's daily note in a floating window, toggled with <leader>dn.
--- Path mirrors the Obsidian structure: ~/Workspace/notes/00-Daily/YYYY/MM-Month/YYYY-MM-DD-Weekday.md
+-- Path mirrors the Obsidian structure: ~/Documents/notes/00-Daily/YYYY/MM-Month/YYYY-MM-DD-Weekday.md
 now(function()
-  local daily_buf = nil
   local daily_file_cached = nil
-  local daily_augroup = vim.api.nvim_create_augroup('MiniMaxDailyNote', { clear = true })
+  local daily_augroup     = vim.api.nvim_create_augroup('MiniMaxDailyNote', { clear = true })
 
   local get_daily_file = function()
     return string.format(
@@ -432,67 +396,63 @@ now(function()
     )
   end
 
-  local find_daily_win = function()
-    if daily_buf == nil or not vim.api.nvim_buf_is_valid(daily_buf) then return nil end
-    for _, win in ipairs(vim.api.nvim_list_wins()) do
-      if vim.api.nvim_win_get_buf(win) == daily_buf then return win end
-    end
-  end
-
-  Config.open_daily_note = function()
-    local daily_file = get_daily_file()
-
-    -- Toggle: close if the today's note is already visible
-    local existing_win = find_daily_win()
-    if existing_win ~= nil and daily_file_cached == daily_file then
-      vim.api.nvim_win_close(existing_win, false)
-      return
-    end
-
-    -- Invalidate cached buffer when the date changes
-    if daily_file ~= daily_file_cached then
-      daily_buf = nil
+  Config.open_daily_note = Config.make_modal({
+    title             = function() return os.date('%Y-%m-%d') end,
+    should_invalidate = function(_buf) return get_daily_file() ~= daily_file_cached end,
+    create_buf        = function(modal)
+      local daily_file = get_daily_file()
       daily_file_cached = daily_file
-    end
-
-    -- Ensure the directory exists
-    vim.fn.mkdir(vim.fn.fnamemodify(daily_file, ':h'), 'p')
-
-    if daily_buf == nil or not vim.api.nvim_buf_is_valid(daily_buf) then
-      daily_buf = vim.fn.bufadd(daily_file)
-      vim.fn.bufload(daily_buf)
-      vim.bo[daily_buf].buflisted = false
-      vim.bo[daily_buf].filetype  = 'markdown'
-
+      vim.fn.mkdir(vim.fn.fnamemodify(daily_file, ':h'), 'p')
+      local b = vim.fn.bufadd(daily_file)
+      vim.fn.bufload(b)
+      vim.bo[b].buflisted = false
+      vim.bo[b].filetype  = 'markdown'
       vim.api.nvim_create_autocmd('BufLeave', {
         group    = daily_augroup,
-        buffer   = daily_buf,
+        buffer   = b,
         callback = function()
-          if vim.bo[daily_buf].modified then
-            vim.api.nvim_buf_call(daily_buf, function() vim.cmd('silent write') end)
+          if vim.bo[b].modified then
+            vim.api.nvim_buf_call(b, function() vim.cmd('silent write') end)
           end
         end,
       })
-      vim.keymap.set('n', 'q', function()
-        local win = find_daily_win()
-        if win ~= nil then vim.api.nvim_win_close(win, false) end
-      end, { buffer = daily_buf, nowait = true, desc = 'Close daily note' })
-    end
+      vim.keymap.set('n', 'q', modal.close, { buffer = b, nowait = true, desc = 'Close daily note' })
+      return b
+    end,
+  })
+end)
 
-    local width  = math.floor(vim.o.columns * 0.8)
-    local height = math.floor(vim.o.lines   * 0.8)
-    vim.api.nvim_open_win(daily_buf, true, {
-      relative  = 'editor',
-      width     = width,
-      height    = height,
-      row       = math.floor((vim.o.lines   - height) / 2),
-      col       = math.floor((vim.o.columns - width)  / 2),
-      style     = 'minimal',
-      border    = 'rounded',
-      title     = ' ' .. os.date('%Y-%m-%d') .. ' ',
-      title_pos = 'center',
-    })
-  end
+-- Lazygit =====================================================================
+
+-- Open lazygit in a floating terminal window, toggled with <leader>gg.
+-- The terminal process is preserved when the window is hidden, so lazygit
+-- state (staged files, etc.) survives across toggles.
+now(function()
+  if vim.fn.executable('lazygit') == 0 then return end
+
+  Config.open_lazygit = Config.make_modal({
+    title  = 'lazygit',
+    size   = 0.9,
+    create_buf = function(_modal)
+      return vim.api.nvim_create_buf(false, true)
+    end,
+    on_open = function(buf, _win, modal)
+      -- Start lazygit once per buffer lifetime
+      if vim.bo[buf].buftype ~= 'terminal' then
+        vim.fn.termopen('lazygit', {
+          on_exit = function()
+            -- Close the window first so we don't leave an empty float behind
+            modal.close()
+            if vim.api.nvim_buf_is_valid(buf) then
+              vim.api.nvim_buf_delete(buf, { force = true })
+            end
+            modal.invalidate()
+          end,
+        })
+      end
+      vim.cmd('startinsert')
+    end,
+  })
 end)
 
 -- You can use it like so:

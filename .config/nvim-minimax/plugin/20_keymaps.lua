@@ -148,6 +148,8 @@ nmap_leader('fV', telescope('find_files'),                               'Visit 
 local git_log_cmd = [[Git log --pretty=format:\%h\ \%as\ │\ \%s --topo-order]]
 local git_log_buf_cmd = git_log_cmd .. ' --follow -- %'
 
+nmap_leader('gg', '<Cmd>lua Config.open_lazygit()<CR>',      'Lazygit')
+
 nmap_leader('ga', '<Cmd>Git diff --cached<CR>',             'Added diff')
 nmap_leader('gA', '<Cmd>Git diff --cached -- %<CR>',        'Added diff buffer')
 nmap_leader('gc', '<Cmd>Git commit<CR>',                    'Commit')
