@@ -234,4 +234,5 @@ nmap_leader('vL', '<Cmd>lua MiniVisits.remove_label()<CR>',       'Remove label'
 
 -- stylua: ignore end
 
-nmap('<leader>.', '<Cmd>lua Config.open_scratch()<CR>', 'Scratch (floating)')
+nmap('<leader>.', '<Cmd>lua Config.open_scratch()<CR>',     'Scratch (floating)')
+nmap('<leader>dn', '<Cmd>lua Config.open_daily_note()<CR>', 'Daily note (floating)')

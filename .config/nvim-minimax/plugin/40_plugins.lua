@@ -411,6 +411,90 @@ now(function()
   end
 end)
 
+-- Daily note ==================================================================
+
+-- Open today's daily note in a floating window, toggled with <leader>dn.
+-- Path mirrors the Obsidian structure: ~/Workspace/notes/00-Daily/YYYY/MM-Month/YYYY-MM-DD-Weekday.md
+now(function()
+  local daily_buf = nil
+  local daily_file_cached = nil
+  local daily_augroup = vim.api.nvim_create_augroup('MiniMaxDailyNote', { clear = true })
+
+  local get_daily_file = function()
+    return string.format(
+      '%s/00-Daily/%s/%s-%s/%s-%s.md',
+      vim.fn.expand('~/Documents/notes'),
+      os.date('%Y'),
+      os.date('%m'),
+      os.date('%B'),
+      os.date('%Y-%m-%d'),
+      os.date('%A')
+    )
+  end
+
+  local find_daily_win = function()
+    if daily_buf == nil or not vim.api.nvim_buf_is_valid(daily_buf) then return nil end
+    for _, win in ipairs(vim.api.nvim_list_wins()) do
+      if vim.api.nvim_win_get_buf(win) == daily_buf then return win end
+    end
+  end
+
+  Config.open_daily_note = function()
+    local daily_file = get_daily_file()
+
+    -- Toggle: close if the today's note is already visible
+    local existing_win = find_daily_win()
+    if existing_win ~= nil and daily_file_cached == daily_file then
+      vim.api.nvim_win_close(existing_win, false)
+      return
+    end
+
+    -- Invalidate cached buffer when the date changes
+    if daily_file ~= daily_file_cached then
+      daily_buf = nil
+      daily_file_cached = daily_file
+    end
+
+    -- Ensure the directory exists
+    vim.fn.mkdir(vim.fn.fnamemodify(daily_file, ':h'), 'p')
+
+    if daily_buf == nil or not vim.api.nvim_buf_is_valid(daily_buf) then
+      daily_buf = vim.fn.bufadd(daily_file)
+      vim.fn.bufload(daily_buf)
+      vim.bo[daily_buf].buflisted = false
+      vim.bo[daily_buf].filetype  = 'markdown'
+
+      vim.api.nvim_create_autocmd('BufLeave', {
+        group    = daily_augroup,
+        buffer   = daily_buf,
+        callback = function()
+          if vim.bo[daily_buf].modified then
+            vim.api.nvim_buf_call(daily_buf, function() vim.cmd('silent write') end)
+          end
+        end,
+      })
+      vim.keymap.set('n', 'q', function()
+        local win = find_daily_win()
+        if win ~= nil then vim.api.nvim_win_close(win, false) end
+      end, { buffer = daily_buf, nowait = true, desc = 'Close daily note' })
+    end
+
+    local width  = math.floor(vim.o.columns * 0.8)
+    local height = math.floor(vim.o.lines   * 0.8)
+    vim.api.nvim_open_win(daily_buf, true, {
+      relative  = 'editor',
+      width     = width,
+      height    = height,
+      row       = math.floor((vim.o.lines   - height) / 2),
+      col       = math.floor((vim.o.columns - width)  / 2),
+      style     = 'minimal',
+      border    = 'rounded',
+      title     = ' ' .. os.date('%Y-%m-%d') .. ' ',
+      title_pos = 'center',
+    })
+  end
+end)
+
 -- You can use it like so:
 -- now_if_args(function()
 --   add({ 'https://github.com/mason-org/mason.nvim' })
