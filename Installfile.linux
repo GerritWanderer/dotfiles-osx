@@ -17,3 +17,5 @@ sudo systemctl enable --now lactd
 sudo pacman -S liquidctl
 Download OCCT and install together with xorg-xhost
 
+# Mouse button remapping for hyprland
+yay -S wtype
