@@ -12,7 +12,9 @@
 local add = vim.pack.add
 local now, now_if_args, later = Config.now, Config.now_if_args, Config.later
 
--- Tree-sitter ================================================================
+-- ┌─────────────────────────┐
+-- │ Tree-sitter             │
+-- └─────────────────────────┘
 
 -- Tree-sitter is a tool for fast incremental parsing. It converts text into
 -- a hierarchical structure (called tree) that can be used to implement advanced
@@ -96,8 +98,9 @@ now_if_args(function()
   })
 end)
 
--- Language servers ===========================================================
-
+-- ┌─────────────────────────┐
+-- │ Language Servers        │
+-- └─────────────────────────┘
 -- Language Server Protocol (LSP) is a set of conventions that power creation of
 -- language specific tools. It requires two parts:
 -- - Server - program that performs language specific computations.
@@ -124,7 +127,9 @@ now_if_args(function()
   })
 end)
 
--- Formatting =================================================================
+-- ┌─────────────────────────┐
+-- │ Formatting              │
+-- └─────────────────────────┘
 
 -- Programs dedicated to text formatting (a.k.a. formatters) are very useful.
 -- Neovim has built-in tools for text formatting (see `:h gq` and `:h 'formatprg'`).
@@ -172,7 +177,9 @@ end)
 -- See `:h MiniSnippets.gen_loader.from_lang()`.
 later(function() add({ 'https://github.com/rafamadriz/friendly-snippets' }) end)
 
--- Neo-tree ==================================================================
+-- ┌─────────────────────────┐
+-- │ Neotree                 │
+-- └─────────────────────────┘
 
 -- A file tree explorer inspired by NERDTree. Provides a panel-based view of
 -- the filesystem, open buffers, and git status. Unlike 'mini.files' (which
