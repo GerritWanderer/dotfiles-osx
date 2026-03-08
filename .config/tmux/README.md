@@ -20,10 +20,12 @@
 | `prefix v` | Split vertically (new pane right) |
 | `prefix x` | Kill pane |
 | `prefix z` | Toggle pane fullscreen (zoom) |
-| `C-M-Arrow` | Navigate between panes (no prefix needed) |
-| `C-M-S-Arrow` | Resize panes by 5 cells (no prefix needed) |
+| `C-h/j/k/l` | Navigate between panes (no prefix needed) |
+| `C-M-h/j/k/l` | Resize panes by 3 cells (no prefix needed) |
 
 > Note: `h`/`v` mnemonics are swapped from their intuitive meaning — `h` gives a horizontal split line (pane below), `v` gives a vertical split line (pane right).
+
+> `C-hjkl` navigation is powered by [smart-splits.nvim](https://github.com/mrjones2014/smart-splits.nvim) and works seamlessly across Neovim splits and tmux panes.
 
 ---
 

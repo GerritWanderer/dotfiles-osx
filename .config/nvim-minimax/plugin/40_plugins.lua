@@ -104,6 +104,11 @@ now(function()
 end)
 
 -- ┌─────────────────────────┐
+-- │ Smart splits            │
+-- └─────────────────────────┘
+later(function() add({ 'https://github.com/mrjones2014/smart-splits.nvim' }) end)
+
+-- ┌─────────────────────────┐
 -- │ Jump / navigation       │
 -- └─────────────────────────┘
 later(function() add({ 'https://github.com/folke/flash.nvim' }) end)
