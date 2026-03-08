@@ -166,17 +166,6 @@ later(function()
   })
 end)
 
--- Snippets ===================================================================
-
--- Although 'mini.snippets' provides functionality to manage snippet files, it
--- deliberately doesn't come with those.
---
--- The 'rafamadriz/friendly-snippets' is currently the largest collection of
--- snippet files. They are organized in 'snippets/' directory (mostly) per language.
--- 'mini.snippets' is designed to work with it as seamlessly as possible.
--- See `:h MiniSnippets.gen_loader.from_lang()`.
-later(function() add({ 'https://github.com/rafamadriz/friendly-snippets' }) end)
-
 -- ┌─────────────────────────┐
 -- │ Neotree                 │
 -- └─────────────────────────┘
@@ -315,7 +304,9 @@ later(function()
   vim.keymap.set({ 'n', 'x', 'o' }, 'S', function() flash.jump() end, { desc = 'Flash jump' })
 end)
 
--- Telescope ==================================================================
+-- ┌─────────────────────────┐
+-- │ Telescope               │
+-- └─────────────────────────┘
 
 -- Fuzzy finder over lists. Replaces 'mini.pick' for all picker workflows.
 -- Use `<Leader>f*` mappings defined in 'plugin/20_keymaps.lua'.
@@ -353,8 +344,15 @@ end)
 -- The caveat is that these programs will be set up to be mostly used inside Neovim.
 -- If you need them to work elsewhere, consider using other package managers.
 --
--- Scratch buffer ==============================================================
+-- You can use it like so:
+-- now_if_args(function()
+--   add({ 'https://github.com/mason-org/mason.nvim' })
+--   require('mason').setup()
+-- end)
 
+-- ┌─────────────────────────┐
+-- │ Scratchpad              │
+-- └─────────────────────────┘
 -- A persistent floating scratch buffer, toggled with <leader>.
 -- Content is saved to disk and survives across Neovim sessions.
 now(function()
@@ -383,8 +381,9 @@ now(function()
   })
 end)
 
--- Daily note ==================================================================
-
+-- ┌─────────────────────────┐
+-- │ Daily Note              │
+-- └─────────────────────────┘
 -- Open today's daily note in a floating window, toggled with <leader>dn.
 -- Path mirrors the Obsidian structure: ~/Documents/notes/00-Daily/YYYY/MM-Month/YYYY-MM-DD-Weekday.md
 now(function()
@@ -429,8 +428,9 @@ now(function()
   })
 end)
 
--- Lazygit =====================================================================
-
+-- ┌─────────────────────────┐
+-- │ Lazygit                 │
+-- └─────────────────────────┘
 -- Open lazygit in a floating terminal window, toggled with <leader>gg.
 -- The terminal process is preserved when the window is hidden, so lazygit
 -- state (staged files, etc.) survives across toggles.
@@ -462,11 +462,6 @@ now(function()
   })
 end)
 
--- You can use it like so:
--- now_if_args(function()
---   add({ 'https://github.com/mason-org/mason.nvim' })
---   require('mason').setup()
--- end)
 
 -- Beautiful, usable, well maintained color schemes outside of 'mini.nvim' and
 -- have full support of its highlight groups. Use if you don't like 'miniwinter'
