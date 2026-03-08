@@ -1,3 +1,5 @@
+local add = vim.pack.add
+local later = Config.later
 
 -- Snippets ===================================================================
 

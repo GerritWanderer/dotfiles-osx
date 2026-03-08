@@ -2,45 +2,16 @@
 -- │ Plugins outside of MINI │
 -- └─────────────────────────┘
 --
--- This file contains installation and configuration of plugins outside of MINI.
--- They significantly improve user experience in a way not yet possible with MINI.
--- These are mostly plugins that provide programming language specific behavior.
---
--- Use this file to install and configure other such plugins.
+-- This file installs plugins outside of MINI.
+-- Custom configuration lives in 'after/plugin/40_plugins.lua'.
 
--- Make concise helpers for installing/adding plugins in two stages
 local add = vim.pack.add
 local now, now_if_args, later = Config.now, Config.now_if_args, Config.later
 
 -- ┌─────────────────────────┐
 -- │ Tree-sitter             │
 -- └─────────────────────────┘
-
--- Tree-sitter is a tool for fast incremental parsing. It converts text into
--- a hierarchical structure (called tree) that can be used to implement advanced
--- and/or more precise actions: syntax highlighting, textobjects, indent, etc.
---
--- Tree-sitter support is built into Neovim (see `:h treesitter`). However, it
--- requires two extra pieces that don't come with Neovim directly:
--- - Language parsers: programs that convert text into trees. Some are built-in
---   (like for Lua), 'nvim-treesitter' provides many others.
---   NOTE: It requires third party software to build and install parsers.
---   See the link for more info in "Requirements" section of the MiniMax README.
--- - Query files: definitions of how to extract information from trees in
---   a useful manner (see `:h treesitter-query`). 'nvim-treesitter' also provides
---   these, while 'nvim-treesitter-textobjects' provides the ones for Neovim
---   textobjects (see `:h text-objects`, `:h MiniAi.gen_spec.treesitter()`).
---
--- Add these plugins now if file (and not 'mini.starter') is shown after startup.
---
--- Troubleshooting:
--- - Run `:checkhealth vim.treesitter nvim-treesitter` to see potential issues.
--- - In case of errors related to queries for Neovim bundled parsers (like `lua`,
---   `vimdoc`, `markdown`, etc.), manually install them via 'nvim-treesitter'
---   with `:TSInstall <language>`. Be sure to have necessary system dependencies
---   (see MiniMax README section for software requirements).
 now_if_args(function()
-  -- Define hook to update tree-sitter parsers after plugin is updated
   local ts_update = function() vim.cmd('TSUpdate') end
   Config.on_packchanged('nvim-treesitter', { 'update' }, ts_update, ':TSUpdate')
 
@@ -50,23 +21,9 @@ now_if_args(function()
     'https://github.com/MeanderingProgrammer/treesitter-modules.nvim',
   })
 
-  -- Define languages which will have parsers installed and auto enabled
-  -- After changing this, restart Neovim once to install necessary parsers. Wait
-  -- for the installation to finish before opening a file for added language(s).
   local languages = {
-    -- These are already pre-installed with Neovim. Used as an example.
-    'lua',
-    'vimdoc',
-    'markdown',
-    -- JavaScript / TypeScript
-    'javascript',
-    'typescript',
-    'tsx',
-    -- Add here more languages with which you want to use tree-sitter
-    -- To see available languages:
-    -- - Execute `:=require('nvim-treesitter').get_available()`
-    -- - Visit 'SUPPORTED_LANGUAGES.md' file at
-    --   https://github.com/nvim-treesitter/nvim-treesitter/blob/main
+    'lua', 'vimdoc', 'markdown',
+    'javascript', 'typescript', 'tsx',
   }
   local isnt_installed = function(lang)
     return #vim.api.nvim_get_runtime_file('parser/' .. lang .. '.*', false) == 0
@@ -74,52 +31,20 @@ now_if_args(function()
   local to_install = vim.tbl_filter(isnt_installed, languages)
   if #to_install > 0 then require('nvim-treesitter').install(to_install) end
 
-  -- Enable tree-sitter after opening a file for a target language
   local filetypes = {}
   for _, lang in ipairs(languages) do
     for _, ft in ipairs(vim.treesitter.language.get_filetypes(lang)) do
       table.insert(filetypes, ft)
     end
   end
-  local ts_start = function(ev) vim.treesitter.start(ev.buf) end
-  Config.new_autocmd('FileType', filetypes, ts_start, 'Start tree-sitter')
-
-  -- Incremental selection: Alt+i to expand node, Alt+o to shrink node
-  require('treesitter-modules').setup({
-    incremental_selection = {
-      enable = true,
-      keymaps = {
-        init_selection    = '<A-i>',
-        node_incremental  = '<A-i>',
-        node_decremental  = '<A-o>',
-        scope_incremental = false,
-      },
-    },
-  })
+  Config.new_autocmd('FileType', filetypes, function(ev) vim.treesitter.start(ev.buf) end, 'Start tree-sitter')
 end)
 
 -- ┌─────────────────────────┐
 -- │ Language Servers        │
 -- └─────────────────────────┘
--- Language Server Protocol (LSP) is a set of conventions that power creation of
--- language specific tools. It requires two parts:
--- - Server - program that performs language specific computations.
--- - Client - program that asks server for computations and shows results.
---
--- Here Neovim itself is a client (see `:h vim.lsp`). Language servers need to
--- be installed separately based on your OS, CLI tools, and preferences.
--- See note about 'mason.nvim' at the bottom of the file.
---
--- Neovim's team collects commonly used configurations for most language servers
--- inside 'neovim/nvim-lspconfig' plugin.
---
--- Add it now if file (and not 'mini.starter') is shown after startup.
 now_if_args(function()
   add({ 'https://github.com/neovim/nvim-lspconfig' })
-
-  -- Use `:h vim.lsp.enable()` to automatically enable language server based on
-  -- the rules provided by 'nvim-lspconfig'.
-  -- Use `:h vim.lsp.config()` or 'after/lsp/' directory to configure servers.
   vim.lsp.enable({
     'lua_ls',    -- Install: brew install lua-language-server
     'ts_ls',     -- Install: npm install -g typescript typescript-language-server
@@ -130,138 +55,30 @@ end)
 -- ┌─────────────────────────┐
 -- │ Formatting              │
 -- └─────────────────────────┘
-
--- Programs dedicated to text formatting (a.k.a. formatters) are very useful.
--- Neovim has built-in tools for text formatting (see `:h gq` and `:h 'formatprg'`).
--- They can be used to configure external programs, but it might become tedious.
---
--- The 'stevearc/conform.nvim' plugin is a good and maintained solution for easier
--- formatting setup.
-later(function()
-  add({ 'https://github.com/stevearc/conform.nvim' })
-
-  -- See also:
-  -- - `:h Conform`
-  -- - `:h conform-options`
-  -- - `:h conform-formatters`
-  require('conform').setup({
-    default_format_opts = {
-      -- Allow formatting from LSP server if no dedicated formatter is available
-      lsp_format = 'fallback',
-    },
-    -- Map of filetype to formatters
-    -- Make sure that necessary CLI tool is available
-    -- Install prettier: npm install -g prettier
-    formatters_by_ft = {
-      javascript      = { 'prettier' },
-      javascriptreact = { 'prettier' },
-      typescript      = { 'prettier' },
-      typescriptreact = { 'prettier' },
-      json            = { 'prettier' },
-      jsonc           = { 'prettier' },
-      css             = { 'prettier' },
-      html            = { 'prettier' },
-      markdown        = { 'prettier' },
-    },
-  })
-end)
+later(function() add({ 'https://github.com/stevearc/conform.nvim' }) end)
 
 -- ┌─────────────────────────┐
 -- │ Neotree                 │
 -- └─────────────────────────┘
-
--- A file tree explorer inspired by NERDTree. Provides a panel-based view of
--- the filesystem, open buffers, and git status. Unlike 'mini.files' (which
--- uses a column/Miller-view), neo-tree is a more traditional tree explorer.
---
--- Dependencies:
---   - plenary.nvim: common Lua utilities used by many plugins
---   - nui.nvim:     UI component library (popups, layouts)
---   - mini.icons:   already set up in 'plugin/30_mini.lua'; neo-tree picks it
---                   up automatically when it is loaded
 later(function()
   add({
     'https://github.com/nvim-neo-tree/neo-tree.nvim',
     'https://github.com/nvim-lua/plenary.nvim',
     'https://github.com/MunifTanjim/nui.nvim',
   })
-
-  require('neo-tree').setup({
-    sources = { 'filesystem', 'buffers', 'git_status' },
-    open_files_do_not_replace_types = { 'terminal', 'qf' },
-
-    filesystem = {
-      bind_to_cwd = false,
-      use_libuv_file_watcher = true,
-      follow_current_file = { enabled = true, leave_dirs_open = true },
-      filtered_items = {
-        visible = true,
-        show_hidden_count = true,
-        hide_dotfiles = false,
-        hide_gitignored = true,
-        hide_by_name = { 'node_modules', 'git' },
-        never_show = { '.git' },
-      },
-    },
-
-    buffers = {
-      follow_current_file = { enabled = true, leave_dirs_open = true },
-    },
-
-    window = {
-      mappings = {
-        ['<space>'] = 'none',
-        ['s']       = false,
-        ['h']       = 'close_node',
-        ['l']       = function(state)
-          local node = state.tree:get_node()
-          if node.type == 'directory' then
-            state.commands['toggle_node'](state)
-          else
-            local neo_win = vim.api.nvim_get_current_win()
-            state.commands['open'](state)
-            vim.api.nvim_set_current_win(neo_win)
-          end
-        end,
-        ['<cr>']    = function(state)
-          state.commands['open'](state)
-          require('neo-tree.command').execute({ action = 'close' })
-        end,
-      },
-    },
-
-    default_component_configs = {
-      indent = {
-        with_expanders       = true,
-        expander_collapsed   = '',
-        expander_expanded    = '',
-        expander_highlight   = 'NeoTreeExpander',
-      },
-      git_status = {
-        symbols = {
-          unstaged = '󰄱',
-          staged   = '',
-        },
-      },
-    },
-  })
 end)
 
--- UI enhancements ============================================================
-
--- Replaces mini.cmdline with a floating cmdline, search, and message UI.
--- The bottom cmdline bar is hidden via cmdheight=0 in 'plugin/10_options.lua'.
--- mini.notify is kept for notifications (<Leader>en for history still works).
---
--- See also:
--- - https://github.com/folke/noice.nvim
+-- ┌─────────────────────────┐
+-- │ UI enhancements         │
+-- └─────────────────────────┘
+-- Must be set up before first draw to intercept startup messages.
+-- See 'after/plugin/40_plugins.lua' for other plugin configurations.
 now(function()
   add({
     'https://github.com/folke/noice.nvim',
     'https://github.com/MunifTanjim/nui.nvim',
   })
   require('noice').setup({
-    -- Keep mini.notify for notifications
     notify = { enabled = false },
     lsp = {
       override = {
@@ -277,210 +94,27 @@ now(function()
   })
 end)
 
--- Jump/navigation ============================================================
-
--- Fast jump to any visible location. Replaces 'mini.jump2d' with a more
--- powerful alternative that integrates with search, tree-sitter, and more.
--- Example usage:
--- - `<CR>`  - jump to a location by typing its label characters
--- - `S`     - jump using tree-sitter syntax-aware targets
--- - `<C-s>` (in command mode) - toggle flash search enhancement
---
--- Note: default flash uses `s` which conflicts with 'mini.surround', so
--- `<CR>` is used instead (matching 'mini.jump2d' default trigger).
---
--- See also:
--- - https://github.com/folke/flash.nvim
-later(function()
-  add({ 'https://github.com/folke/flash.nvim' })
-  require('flash').setup({
-    modes = {
-      -- Don't hijack `/` search by default
-      search = { enabled = false },
-    },
-  })
-  local flash = require('flash')
-  -- `S` for Flash jumps (capital S doesn't conflict with mini.surround)
-  vim.keymap.set({ 'n', 'x', 'o' }, 'S', function() flash.jump() end, { desc = 'Flash jump' })
+-- ┌─────────────────────────┐
+-- │ Color scheme            │
+-- └─────────────────────────┘
+now(function()
+  add({ 'https://github.com/folke/tokyonight.nvim' })
+  require('tokyonight').setup({ style = 'night' })
+  vim.cmd('colorscheme tokyonight')
 end)
+
+-- ┌─────────────────────────┐
+-- │ Jump / navigation       │
+-- └─────────────────────────┘
+later(function() add({ 'https://github.com/folke/flash.nvim' }) end)
 
 -- ┌─────────────────────────┐
 -- │ Telescope               │
 -- └─────────────────────────┘
-
--- Fuzzy finder over lists. Replaces 'mini.pick' for all picker workflows.
--- Use `<Leader>f*` mappings defined in 'plugin/20_keymaps.lua'.
---
--- See also:
--- - https://github.com/nvim-telescope/telescope.nvim
--- - `:h telescope.builtin` - list of built-in pickers
 later(function()
   add({
     'https://github.com/nvim-telescope/telescope.nvim',
     'https://github.com/nvim-lua/plenary.nvim',
     'https://github.com/nvim-tree/nvim-web-devicons',
   })
-  require('telescope').setup({
-    defaults = {
-      sorting_strategy = 'ascending',
-      layout_config = { prompt_position = 'top' },
-      mappings = {
-        i = { ['<C-n>'] = 'cycle_history_next', ['<C-p>'] = 'cycle_history_prev', ['<C-g>'] = 'to_fuzzy_refine' },
-      },
-    },
-    pickers = {
-      find_files = { hidden = true },
-      live_grep  = { additional_args = { '--hidden' } },
-    },
-  })
-end)
-
--- Honorable mentions =========================================================
-
--- 'mason-org/mason.nvim' (a.k.a. "Mason") is a great tool (package manager) for
--- installing external language servers, formatters, and linters. It provides
--- a unified interface for installing, updating, and deleting such programs.
---
--- The caveat is that these programs will be set up to be mostly used inside Neovim.
--- If you need them to work elsewhere, consider using other package managers.
---
--- You can use it like so:
--- now_if_args(function()
---   add({ 'https://github.com/mason-org/mason.nvim' })
---   require('mason').setup()
--- end)
-
--- ┌─────────────────────────┐
--- │ Scratchpad              │
--- └─────────────────────────┘
--- A persistent floating scratch buffer, toggled with <leader>.
--- Content is saved to disk and survives across Neovim sessions.
-now(function()
-  local scratch_file   = vim.fn.stdpath('data') .. '/scratch.ts'
-  local scratch_augroup = vim.api.nvim_create_augroup('MiniMaxScratch', { clear = true })
-
-  Config.open_scratch = Config.make_modal({
-    title = 'Scratch',
-    create_buf = function(modal)
-      local b = vim.fn.bufadd(scratch_file)
-      vim.fn.bufload(b)
-      vim.bo[b].buflisted = false
-      vim.bo[b].filetype  = 'typescript'
-      vim.api.nvim_create_autocmd('BufLeave', {
-        group    = scratch_augroup,
-        buffer   = b,
-        callback = function()
-          if vim.bo[b].modified then
-            vim.api.nvim_buf_call(b, function() vim.cmd('silent write') end)
-          end
-        end,
-      })
-      vim.keymap.set('n', 'q', modal.close, { buffer = b, nowait = true, desc = 'Close scratch' })
-      return b
-    end,
-  })
-end)
-
--- ┌─────────────────────────┐
--- │ Daily Note              │
--- └─────────────────────────┘
--- Open today's daily note in a floating window, toggled with <leader>dn.
--- Path mirrors the Obsidian structure: ~/Documents/notes/00-Daily/YYYY/MM-Month/YYYY-MM-DD-Weekday.md
-now(function()
-  local daily_file_cached = nil
-  local daily_augroup     = vim.api.nvim_create_augroup('MiniMaxDailyNote', { clear = true })
-
-  local get_daily_file = function()
-    return string.format(
-      '%s/00-Daily/%s/%s-%s/%s-%s.md',
-      vim.fn.expand('~/Documents/notes'),
-      os.date('%Y'),
-      os.date('%m'),
-      os.date('%B'),
-      os.date('%Y-%m-%d'),
-      os.date('%A')
-    )
-  end
-
-  Config.open_daily_note = Config.make_modal({
-    title             = function() return os.date('%Y-%m-%d') end,
-    should_invalidate = function(_buf) return get_daily_file() ~= daily_file_cached end,
-    create_buf        = function(modal)
-      local daily_file = get_daily_file()
-      daily_file_cached = daily_file
-      vim.fn.mkdir(vim.fn.fnamemodify(daily_file, ':h'), 'p')
-      local b = vim.fn.bufadd(daily_file)
-      vim.fn.bufload(b)
-      vim.bo[b].buflisted = false
-      vim.bo[b].filetype  = 'markdown'
-      vim.api.nvim_create_autocmd('BufLeave', {
-        group    = daily_augroup,
-        buffer   = b,
-        callback = function()
-          if vim.bo[b].modified then
-            vim.api.nvim_buf_call(b, function() vim.cmd('silent write') end)
-          end
-        end,
-      })
-      vim.keymap.set('n', 'q', modal.close, { buffer = b, nowait = true, desc = 'Close daily note' })
-      return b
-    end,
-  })
-end)
-
--- ┌─────────────────────────┐
--- │ Lazygit                 │
--- └─────────────────────────┘
--- Open lazygit in a floating terminal window, toggled with <leader>gg.
--- The terminal process is preserved when the window is hidden, so lazygit
--- state (staged files, etc.) survives across toggles.
-now(function()
-  if vim.fn.executable('lazygit') == 0 then return end
-
-  Config.open_lazygit = Config.make_modal({
-    title  = 'lazygit',
-    size   = 0.9,
-    create_buf = function(_modal)
-      return vim.api.nvim_create_buf(false, true)
-    end,
-    on_open = function(buf, _win, modal)
-      -- Start lazygit once per buffer lifetime
-      if vim.bo[buf].buftype ~= 'terminal' then
-        vim.fn.termopen('lazygit', {
-          on_exit = function()
-            -- Close the window first so we don't leave an empty float behind
-            modal.close()
-            if vim.api.nvim_buf_is_valid(buf) then
-              vim.api.nvim_buf_delete(buf, { force = true })
-            end
-            modal.invalidate()
-          end,
-        })
-      end
-      vim.cmd('startinsert')
-    end,
-  })
-end)
-
-
--- Beautiful, usable, well maintained color schemes outside of 'mini.nvim' and
--- have full support of its highlight groups. Use if you don't like 'miniwinter'
--- enabled in 'plugin/30_mini.lua' or other suggested 'mini.hues' based ones.
--- Config.now(function()
---  -- Install only those that you need
---  add({
---    'https://github.com/sainnhe/everforest',
---    'https://github.com/Shatur/neovim-ayu',
---    'https://github.com/ellisonleao/gruvbox.nvim',
---  })
---
---   -- Enable only one
---   vim.cmd('color everforest')
--- end)
-
--- Tokyo Night color scheme
-now(function()
-  add({ 'https://github.com/folke/tokyonight.nvim' })
-  require('tokyonight').setup({ style = 'night' })
-  vim.cmd('colorscheme tokyonight')
 end)
