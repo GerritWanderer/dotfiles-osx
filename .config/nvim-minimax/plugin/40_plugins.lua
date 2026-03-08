@@ -482,3 +482,10 @@ end)
 --   -- Enable only one
 --   vim.cmd('color everforest')
 -- end)
+
+-- Tokyo Night color scheme
+now(function()
+  add({ 'https://github.com/folke/tokyonight.nvim' })
+  require('tokyonight').setup({ style = 'night' })
+  vim.cmd('colorscheme tokyonight')
+end)

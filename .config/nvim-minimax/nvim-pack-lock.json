@@ -52,6 +52,10 @@
       "rev": "5255aa27c422de944791318024167ad5d40aad20",
       "src": "https://github.com/nvim-telescope/telescope.nvim"
     },
+    "tokyonight.nvim": {
+      "rev": "5da1b76e64daf4c5d410f06bcb6b9cb640da7dfd",
+      "src": "https://github.com/folke/tokyonight.nvim"
+    },
     "treesitter-modules.nvim": {
       "rev": "0cc09da40061051b0186479203faa75052cddab6",
       "src": "https://github.com/MeanderingProgrammer/treesitter-modules.nvim"
