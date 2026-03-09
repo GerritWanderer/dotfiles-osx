@@ -10,7 +10,7 @@
 
 -- Make concise helpers for installing/adding plugins in two stages
 local add = vim.pack.add
-local now_if_args, later = Config.now_if_args, Config.later
+local now, now_if_args, later = Config.now, Config.now_if_args, Config.later
 
 -- Tree-sitter ================================================================
 
@@ -141,6 +141,236 @@ end)
 -- 'mini.snippets' is designed to work with it as seamlessly as possible.
 -- See `:h MiniSnippets.gen_loader.from_lang()`.
 later(function() add({ 'https://github.com/rafamadriz/friendly-snippets' }) end)
+
+-- Telescope ==================================================================
+
+-- telescope.nvim is a fuzzy finder used by obsidian.nvim for all picker actions
+-- (searching notes, backlinks, tags, TOC, etc.)
+later(function()
+  add({
+    'https://github.com/nvim-telescope/telescope.nvim',
+    'https://github.com/nvim-lua/plenary.nvim',
+    'https://github.com/nvim-tree/nvim-web-devicons',
+  })
+end)
+
+-- Obsidian ===================================================================
+
+-- obsidian-nvim/obsidian.nvim is a community fork of the Obsidian plugin for
+-- Neovim. It provides note navigation, daily notes, templates, backlinks, tags,
+-- and more. Only active inside markdown files within the configured vault path.
+--
+-- Commands cheat sheet (all via `:Obsidian <Tab>` or the keymaps below):
+--   Navigation:   <Leader>on (new from template)  <Leader>oq (quick switch)  <Leader>os (search)
+--   Daily notes:  <Leader>ot (today)     <Leader>oy (yesterday)     <Leader>om (tomorrow)
+--   Links:        <CR>       (smart act) [o / ]o    (prev/next link)
+--   Note tools:   <Leader>ob (backlinks) <Leader>oc (toggle checkbox)
+--                 <Leader>ol (links in note)  <Leader>od (daily list)
+--                 <Leader>ow (switch workspace)
+--   Templates:    <Leader>oi (insert template)
+--   Visual:       <Leader>ox (extract selection to new note)  <Leader>ok (link selection)
+later(function()
+  add({ 'https://github.com/obsidian-nvim/obsidian.nvim' })
+
+  ---@module 'obsidian'
+  ---@type obsidian.config
+  require('obsidian').setup({
+    legacy_commands = false,
+
+    workspaces = {
+      {
+        name = 'notes',
+        path = '~/Documents/notes',
+      },
+    },
+
+    -- New notes go into 01-Wildflowers by default
+    notes_subdir = '01-Wildflowers',
+
+    -- Slugify the title as note ID (e.g. "My Note" -> "my-note")
+    note_id_func = function(title)
+      return title:gsub(' ', '-'):gsub('[^A-Za-z0-9-]', ''):lower()
+    end,
+
+    -- Templates folder inside the vault
+    templates = {
+      folder = '99-extras/templates',
+    },
+
+    -- Use telescope for all picker actions
+    picker = { name = 'telescope.nvim' },
+
+    -- Open note in current window by default (change to 'vsplit' or 'hsplit' if preferred)
+    open_notes_in = 'current',
+
+    -- Daily notes configuration
+    daily_notes = {
+      folder = '00-Daily',
+      date_format = '%Y/%m-%B/%Y-%m-%d-%A',
+      default_tags = { 'type/daily' },
+      template = 'daily',
+    },
+
+    -- Disable default UI extras (handled by treesitter in this config)
+    ui = { enable = false },
+
+    -- Keymaps: set up when entering a note buffer via ObsidianNoteEnter autocmd
+    callbacks = {
+      enter_note = function(_note)
+        local actions = require('obsidian.actions')
+        local buf = true -- buffer-local mapping
+
+        -- Smart action: follow link / toggle checkbox / cycle fold / show tag notes
+        vim.keymap.set('n', '<CR>', require('obsidian.api').smart_action, { buffer = buf, desc = 'Obsidian smart action' })
+
+        -- Navigate between links in the note
+        vim.keymap.set('n', ']o', function() actions.nav_link('next') end, { buffer = buf, desc = 'Next link' })
+        vim.keymap.set('n', '[o', function() actions.nav_link('prev') end, { buffer = buf, desc = 'Previous link' })
+
+        -- Note management
+        vim.keymap.set('n', '<Leader>ob', '<Cmd>Obsidian backlinks<CR>',        { buffer = buf, desc = 'Obsidian backlinks' })
+        vim.keymap.set('n', '<Leader>oc', '<Cmd>Obsidian toggle_checkbox<CR>',  { buffer = buf, desc = 'Obsidian toggle checkbox' })
+        vim.keymap.set('n', '<Leader>od', '<Cmd>Obsidian dailies<CR>',          { buffer = buf, desc = 'Obsidian daily list' })
+        vim.keymap.set('n', '<Leader>oi', '<Cmd>Obsidian template<CR>',         { buffer = buf, desc = 'Obsidian insert template' })
+        vim.keymap.set('n', '<Leader>ol', '<Cmd>Obsidian links<CR>',            { buffer = buf, desc = 'Obsidian links in note' })
+        vim.keymap.set('n', '<Leader>on', '<Cmd>Obsidian new_from_template<CR>', { buffer = buf, desc = 'Obsidian new note from template' })
+        vim.keymap.set('n', '<Leader>oo', '<Cmd>Obsidian open<CR>',             { buffer = buf, desc = 'Obsidian open in app' })
+        vim.keymap.set('n', '<Leader>oq', '<Cmd>Obsidian quick_switch<CR>',     { buffer = buf, desc = 'Obsidian quick switch' })
+        vim.keymap.set('n', '<Leader>or', '<Cmd>Obsidian rename<CR>',           { buffer = buf, desc = 'Obsidian rename note' })
+        vim.keymap.set('n', '<Leader>os', '<Cmd>Obsidian search<CR>',           { buffer = buf, desc = 'Obsidian search vault' })
+        vim.keymap.set('n', '<Leader>ot', '<Cmd>Obsidian today<CR>',            { buffer = buf, desc = 'Obsidian today' })
+        vim.keymap.set('n', '<Leader>om', '<Cmd>Obsidian tomorrow<CR>',         { buffer = buf, desc = 'Obsidian tomorrow' })
+        vim.keymap.set('n', '<Leader>oy', '<Cmd>Obsidian yesterday<CR>',        { buffer = buf, desc = 'Obsidian yesterday' })
+        vim.keymap.set('n', '<Leader>oT', '<Cmd>Obsidian toc<CR>',              { buffer = buf, desc = 'Obsidian table of contents' })
+        vim.keymap.set('n', '<Leader>ow', '<Cmd>Obsidian workspace<CR>',        { buffer = buf, desc = 'Obsidian switch workspace' })
+        vim.keymap.set('n', '<Leader>og', '<Cmd>Obsidian tags<CR>',             { buffer = buf, desc = 'Obsidian tags' })
+        vim.keymap.set('n', '<Leader>oP', '<Cmd>Obsidian paste_img<CR>',        { buffer = buf, desc = 'Obsidian paste image' })
+
+        -- Visual mode: link / link-to-new / extract to note
+        vim.keymap.set('v', '<Leader>ok', '<Cmd>Obsidian link<CR>',        { buffer = buf, desc = 'Obsidian link selection' })
+        vim.keymap.set('v', '<Leader>oK', '<Cmd>Obsidian link_new<CR>',    { buffer = buf, desc = 'Obsidian link selection to new note' })
+        vim.keymap.set('v', '<Leader>ox', '<Cmd>Obsidian extract_note<CR>', { buffer = buf, desc = 'Obsidian extract to new note' })
+      end,
+    },
+  })
+
+  -- Global shortcuts (work outside of note buffers too, e.g. from starter)
+  vim.keymap.set('n', '<Leader>on', '<Cmd>Obsidian new_from_template<CR>', { desc = 'Obsidian new note from template' })
+  vim.keymap.set('n', '<Leader>oq', '<Cmd>Obsidian quick_switch<CR>', { desc = 'Obsidian quick switch' })
+  vim.keymap.set('n', '<Leader>os', '<Cmd>Obsidian search<CR>',       { desc = 'Obsidian search vault' })
+  vim.keymap.set('n', '<Leader>ot', '<Cmd>Obsidian today<CR>',        { desc = 'Obsidian today' })
+  vim.keymap.set('n', '<Leader>oy', '<Cmd>Obsidian yesterday<CR>',    { desc = 'Obsidian yesterday' })
+  vim.keymap.set('n', '<Leader>om', '<Cmd>Obsidian tomorrow<CR>',     { desc = 'Obsidian tomorrow' })
+  vim.keymap.set('n', '<Leader>od', '<Cmd>Obsidian dailies<CR>',      { desc = 'Obsidian daily list' })
+  vim.keymap.set('n', '<Leader>ow', '<Cmd>Obsidian workspace<CR>',    { desc = 'Obsidian switch workspace' })
+end)
+
+-- UI enhancements ============================================================
+
+-- noice.nvim replaces the cmdline, messages, and popupmenu with a modern UI.
+-- Must run at startup (now) to intercept startup messages.
+-- nui.nvim is added here explicitly since noice needs it at now() time,
+-- before the neotree later() block has a chance to install it.
+now(function()
+  add({
+    'https://github.com/folke/noice.nvim',
+    'https://github.com/MunifTanjim/nui.nvim',
+  })
+  require('noice').setup({
+    notify = { enabled = false },
+    lsp = {
+      override = {
+        ['vim.lsp.util.convert_input_to_markdown_lines'] = true,
+        ['vim.lsp.util.stylize_markdown'] = true,
+      },
+    },
+    presets = {
+      bottom_search         = true,  -- classic bottom search bar
+      command_palette       = true,  -- cmdline and popupmenu positioned together
+      long_message_to_split = true,  -- long messages go to a split
+    },
+  })
+end)
+
+-- Smart splits ===============================================================
+
+-- Seamless navigation between Neovim splits and tmux panes.
+-- See 'after/plugin/40_plugins.lua' for keymaps (overrides mini.basics <C-hjkl>).
+later(function() add({ 'https://github.com/mrjones2014/smart-splits.nvim' }) end)
+
+-- Neotree ====================================================================
+
+-- neo-tree.nvim is a file explorer tree. Use `<Leader>e` to toggle it and
+-- `<Leader>E` to reveal the current file in the tree.
+-- nui.nvim is a required UI component library for neo-tree.
+-- add() and setup() are in the same later() block to guarantee ordering.
+later(function()
+  add({
+    'https://github.com/nvim-neo-tree/neo-tree.nvim',
+    'https://github.com/nvim-lua/plenary.nvim',
+    'https://github.com/MunifTanjim/nui.nvim',
+  })
+
+  require('neo-tree').setup({
+    sources = { 'filesystem', 'buffers', 'git_status' },
+    open_files_do_not_replace_types = { 'terminal', 'qf' },
+
+    filesystem = {
+      bind_to_cwd = false,
+      use_libuv_file_watcher = true,
+      follow_current_file = { enabled = true, leave_dirs_open = true },
+      filtered_items = {
+        visible = true,
+        show_hidden_count = true,
+        hide_dotfiles = false,
+        hide_gitignored = true,
+        hide_by_name = { 'node_modules', 'git' },
+        never_show = { '.git' },
+      },
+    },
+
+    buffers = {
+      follow_current_file = { enabled = true, leave_dirs_open = true },
+    },
+
+    window = {
+      mappings = {
+        ['<space>'] = 'none',
+        ['s']       = false,
+        ['h']       = 'close_node',
+        ['l']       = function(state)
+          local node = state.tree:get_node()
+          if node.type == 'directory' then
+            state.commands['toggle_node'](state)
+          else
+            local neo_win = vim.api.nvim_get_current_win()
+            state.commands['open'](state)
+            vim.api.nvim_set_current_win(neo_win)
+          end
+        end,
+        ['<cr>']    = function(state)
+          state.commands['open'](state)
+          require('neo-tree.command').execute({ action = 'close' })
+        end,
+      },
+    },
+
+    default_component_configs = {
+      indent = {
+        with_expanders       = true,
+        expander_collapsed   = '',
+        expander_expanded    = '',
+        expander_highlight   = 'NeoTreeExpander',
+      },
+      git_status = {
+        symbols = {
+          unstaged = '󰄱',
+          staged   = '',
+        },
+      },
+    },
+  })
+end)
 
 -- Honorable mentions =========================================================
 
