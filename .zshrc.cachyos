@@ -65,7 +65,7 @@ export EDITOR='nvim'
 # Get the error messages from journalctl
 alias jctl="journalctl -p 3 -xb"
 alias t='tmux attach || tmux new -s Work'
-alias tmosh='mosh gerrit@100.86.82.32'
+alias tmosh='mosh tmux'
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
