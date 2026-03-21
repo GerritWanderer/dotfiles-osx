@@ -6,6 +6,7 @@
 .bashrc.omarchy
 .zshrc.cachyos
 .zshrc.osx
+.zshrc.tmux
 
 # platform specific ghostty and hypr files
 .config/ghostty
