@@ -71,7 +71,7 @@ bindkey "^H" backward-delete-word
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 if [[ -z "$TMUX" ]] && [[ -n "$SSH_CONNECTION" ]]; then
-  tmux new-session -A -s main
+  tmux new-session -A -s "1) Main"
 fi
 # Oh my posh setup
 eval "$(oh-my-posh init zsh --config ~/.config/oh-my-posh/catppuccin_mocha.omp.json)"
