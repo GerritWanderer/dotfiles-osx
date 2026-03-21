@@ -70,9 +70,10 @@ bindkey "^H" backward-delete-word
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
+if [[ -z "$TMUX" ]] && [[ -n "$SSH_CONNECTION" ]]; then
+  tmux new-session -A -s main
+fi
 # Oh my posh setup
 eval "$(oh-my-posh init zsh --config ~/.config/oh-my-posh/catppuccin_mocha.omp.json)"
 # Activate mise
 eval "$(mise activate zsh)"
-# opencode
-export PATH=/home/gerrit/.opencode/bin:$PATH
