@@ -10,6 +10,9 @@
 # platform specific ghostty files
 .config/ghostty/macosx
 
+# platform specific tmux files
+.config/systemd
+
 # platform specific stow files
 .stow-local-ignore.linux
 .stow-local-ignore.osx
