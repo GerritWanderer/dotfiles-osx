@@ -15,7 +15,6 @@
 .config/lofitui
 .config/nvim-lazyvim
 .config/nvim-minimax
-.config/nvim-obsidian
 
 # platform specific stow files
 .stow-local-ignore.linux
