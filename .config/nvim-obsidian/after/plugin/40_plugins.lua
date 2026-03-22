@@ -9,25 +9,6 @@
 local later = Config.later
 
 -- ┌─────────────────────────┐
--- │ Smart splits            │
--- └─────────────────────────┘
--- Seamless navigation between Neovim splits and tmux panes.
--- Overrides mini.basics <C-hjkl> mappings set in 'plugin/30_mini.lua'.
-later(function()
-  local ss = require('smart-splits')
-  -- Navigate between Neovim splits and tmux panes
-  vim.keymap.set('n', '<C-h>', ss.move_cursor_left,  { desc = 'Navigate left' })
-  vim.keymap.set('n', '<C-j>', ss.move_cursor_down,  { desc = 'Navigate down' })
-  vim.keymap.set('n', '<C-k>', ss.move_cursor_up,    { desc = 'Navigate up' })
-  vim.keymap.set('n', '<C-l>', ss.move_cursor_right, { desc = 'Navigate right' })
-  -- Resize Neovim splits and tmux panes
-  vim.keymap.set('n', '<C-M-h>', ss.resize_left,  { desc = 'Resize left' })
-  vim.keymap.set('n', '<C-M-j>', ss.resize_down,  { desc = 'Resize down' })
-  vim.keymap.set('n', '<C-M-k>', ss.resize_up,    { desc = 'Resize up' })
-  vim.keymap.set('n', '<C-M-l>', ss.resize_right, { desc = 'Resize right' })
-end)
-
--- ┌─────────────────────────┐
 -- │ Telescope               │
 -- └─────────────────────────┘
 later(function()

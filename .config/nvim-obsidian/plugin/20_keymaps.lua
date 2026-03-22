@@ -61,7 +61,7 @@ nmap(']p', '<Cmd>exe "iput "  . v:register<CR>', 'Paste Below')
 -- Add an entry if you create a new group.
 Config.leader_group_clues = {
   { mode = 'n', keys = '<Leader>b', desc = '+Buffer' },
-
+  { mode = 'n', keys = '<Leader>e', desc = '+Explore/Edit' },
   { mode = 'n', keys = '<Leader>f', desc = '+Find' },
   { mode = 'n', keys = '<Leader>g', desc = '+Git' },
   { mode = 'n', keys = '<Leader>l', desc = '+Language' },
@@ -104,9 +104,27 @@ nmap_leader('bs', new_scratch_buffer,                            'Scratch')
 nmap_leader('bw', '<Cmd>lua MiniBufremove.wipeout()<CR>',        'Wipeout')
 nmap_leader('bW', '<Cmd>lua MiniBufremove.wipeout(0, true)<CR>', 'Wipeout!')
 
--- e is for 'Explore'
-nmap_leader('e', '<Cmd>Neotree toggle source=filesystem<CR>', 'Explorer (neo-tree)')
-nmap_leader('E', '<Cmd>Neotree reveal<CR>',                   'Explorer reveal file')
+-- e is for 'Explore' and 'Edit'. Common usage:
+-- - `<Leader>ed` - open explorer at current working directory
+-- - `<Leader>ef` - open directory of current file (needs to be present on disk)
+-- - `<Leader>ei` - edit 'init.lua'
+-- - All mappings that use `edit_plugin_file` - edit 'plugin/' config files
+local edit_plugin_file = function(filename)
+  return string.format('<Cmd>edit %s/plugin/%s<CR>', vim.fn.stdpath('config'), filename)
+end
+local explore_at_file = '<Cmd>lua MiniFiles.open(vim.api.nvim_buf_get_name(0))<CR>'
+local explore_quickfix = function()
+  vim.cmd(vim.fn.getqflist({ winid = true }).winid ~= 0 and 'cclose' or 'copen')
+end
+local explore_locations = function()
+  vim.cmd(vim.fn.getloclist(0, { winid = true }).winid ~= 0 and 'lclose' or 'lopen')
+end
+
+nmap_leader('ed', '<Cmd>lua MiniFiles.open()<CR>',          'Directory')
+nmap_leader('ef', explore_at_file,                          'File directory')
+nmap_leader('en', '<Cmd>lua MiniNotify.show_history()<CR>', 'Notifications')
+nmap_leader('eq', explore_quickfix,                         'Quickfix list')
+nmap_leader('eQ', explore_locations,                        'Location list')
 
 -- f is for 'Fuzzy Find'. Common usage:
 -- - `<Leader><Space>` - find files (shortcut)
@@ -189,22 +207,6 @@ nmap_leader('lt', '<Cmd>lua vim.lsp.buf.type_definition()<CR>', 'Type definition
 
 xmap_leader('lf', '<Cmd>lua require("conform").format()<CR>', 'Format selection')
 
--- LSP navigation (LazyVim style). Common usage:
--- - `gd` - goto definition
--- - `gr` - references  NOTE: overrides mini.operators replace (`gr`)
--- - `gI` - goto implementation
--- - `gy` - goto type definition
--- - `gD` - goto declaration
--- - `K`  - hover docs
--- - `gK` - signature help
-nmap('gd', '<Cmd>lua vim.lsp.buf.definition()<CR>',      'Goto Definition')
-nmap('gr', '<Cmd>lua vim.lsp.buf.references()<CR>',      'References')
-nmap('gI', '<Cmd>lua vim.lsp.buf.implementation()<CR>',  'Goto Implementation')
-nmap('gy', '<Cmd>lua vim.lsp.buf.type_definition()<CR>', 'Goto T[y]pe Definition')
-nmap('gD', '<Cmd>lua vim.lsp.buf.declaration()<CR>',     'Goto Declaration')
-nmap('K',  '<Cmd>lua vim.lsp.buf.hover()<CR>',           'Hover')
-nmap('gK', '<Cmd>lua vim.lsp.buf.signature_help()<CR>',  'Signature Help')
-
 -- m is for 'Map'. Common usage:
 -- - `<Leader>mt` - toggle map from 'mini.map' (closed by default)
 -- - `<Leader>mf` - focus on the map for fast navigation
@@ -239,12 +241,19 @@ nmap_leader('tT', '<Cmd>horizontal term<CR>', 'Terminal (horizontal)')
 nmap_leader('tt', '<Cmd>vertical term<CR>',   'Terminal (vertical)')
 
 -- v is for 'Visits'. Common usage:
--- - `<Leader>vc` - pick among recently visited files (all)
--- - `<Leader>vC` - pick among recently visited files (cwd)
--- - `<Leader>vv` - add "core" label to current file
--- - `<Leader>vV` - remove "core" label from current file
-nmap_leader('vc', telescope('oldfiles'),                               'Core visits (all)')
-nmap_leader('vC', telescope('find_files'),                             'Core visits (cwd)')
+-- - `<Leader>vv` - add    "core" label to current file.
+-- - `<Leader>vV` - remove "core" label to current file.
+-- - `<Leader>vc` - pick among all files with "core" label.
+local make_pick_core = function(cwd, desc)
+  return function()
+    local sort_latest = MiniVisits.gen_sort.default({ recency_weight = 1 })
+    local local_opts = { cwd = cwd, filter = 'core', sort = sort_latest }
+    MiniExtra.pickers.visit_paths(local_opts, { source = { name = desc } })
+  end
+end
+
+nmap_leader('vc', make_pick_core('',  'Core visits (all)'),       'Core visits (all)')
+nmap_leader('vC', make_pick_core(nil, 'Core visits (cwd)'),       'Core visits (cwd)')
 nmap_leader('vv', '<Cmd>lua MiniVisits.add_label("core")<CR>',    'Add "core" label')
 nmap_leader('vV', '<Cmd>lua MiniVisits.remove_label("core")<CR>', 'Remove "core" label')
 nmap_leader('vl', '<Cmd>lua MiniVisits.add_label()<CR>',          'Add label')
