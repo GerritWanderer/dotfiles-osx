@@ -256,7 +256,9 @@ now_if_args(function()
 
   -- Synchronize terminal emulator background with Neovim's background to remove
   -- possibly different color padding around Neovim instance
-  MiniMisc.setup_termbg_sync()
+  if not (vim.env.SSH_TTY or vim.env.SSH_CONNECTION) then
+    MiniMisc.setup_termbg_sync()
+  end
 end)
 
 -- Step two ===================================================================
