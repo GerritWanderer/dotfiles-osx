@@ -1,4 +1,5 @@
 .zshrc
+.envrc
 .stow-local-ignore
 .config/nvim
 .config/ghostty/config

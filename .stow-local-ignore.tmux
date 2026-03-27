@@ -29,3 +29,4 @@ Installfile.tmux
 etc
 scripts
 .ssh
+.envrc.example
