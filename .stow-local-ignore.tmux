@@ -9,8 +9,6 @@
 .zshrc.tmux
 
 # platform specific ghostty and hypr files
-.config/ghostty
-.config/hypr
 .config/kitty
 .config/lofitui
 .config/nvim-lazyvim
