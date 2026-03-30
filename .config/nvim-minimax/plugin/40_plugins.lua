@@ -47,7 +47,8 @@ now_if_args(function()
   add({ 'https://github.com/neovim/nvim-lspconfig' })
   vim.lsp.enable({
     'lua_ls',    -- Install: brew install lua-language-server
-    'ts_ls',     -- Install: npm install -g typescript typescript-language-server
+    'tsgo',      -- Install: npm install @typescript/native-preview
+    -- 'ts_ls',  -- Install: npm install -g typescript typescript-language-server
     'eslint',    -- Install: npm install -g vscode-langservers-extracted
   })
 end)
