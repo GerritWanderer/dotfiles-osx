@@ -14,6 +14,12 @@ local nmap = function(lhs, rhs, desc)
   vim.keymap.set('n', lhs, rhs, { desc = desc })
 end
 
+local remove_lsp_mapping = function(mode, lhs)
+  local map_desc = vim.fn.maparg(lhs, mode, false, true).desc
+  if map_desc == nil or string.find(map_desc, 'vim%.lsp') == nil then return end
+  vim.keymap.del(mode, lhs)
+end
+
 -- Clear hlsearch on Escape
 nmap('<Esc>', '<Esc><Cmd>nohlsearch<CR>', 'Escape and clear hlsearch')
 
@@ -176,17 +182,26 @@ xmap_leader('lf', '<Cmd>lua require("conform").format()<CR>', 'Format selection'
 
 -- LSP navigation (LazyVim style). Common usage:
 -- - `gd` - goto definition
--- - `gr` - references  NOTE: overrides mini.operators replace (`gr`)
+-- - `gr` - references
 -- - `gI` - goto implementation
 -- - `gy` - goto type definition
 -- - `gD` - goto declaration
 -- - `K`  - hover docs
 -- - `gK` - signature help
+
+-- Remove Neovim built-in LSP defaults that conflict with our gr mapping
+remove_lsp_mapping('n', 'gra')
+remove_lsp_mapping('x', 'gra')
+remove_lsp_mapping('n', 'gri')
+remove_lsp_mapping('n', 'grn')
+remove_lsp_mapping('n', 'grr')
+remove_lsp_mapping('n', 'grt')
+remove_lsp_mapping('n', 'grx')
+
 nmap('gd', '<Cmd>lua vim.lsp.buf.definition()<CR>',      'Goto Definition')
-nmap('gr', '<Cmd>lua vim.lsp.buf.references()<CR>',      'References')
+nmap('gr', telescope('lsp_references'),                   'References')
 nmap('gI', '<Cmd>lua vim.lsp.buf.implementation()<CR>',  'Goto Implementation')
 nmap('gy', '<Cmd>lua vim.lsp.buf.type_definition()<CR>', 'Goto T[y]pe Definition')
-nmap('gD', '<Cmd>lua vim.lsp.buf.declaration()<CR>',     'Goto Declaration')
 nmap('K',  '<Cmd>lua vim.lsp.buf.hover()<CR>',           'Hover')
 nmap('gK', '<Cmd>lua vim.lsp.buf.signature_help()<CR>',  'Signature Help')
 
