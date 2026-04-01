@@ -18,7 +18,6 @@ now_if_args(function()
   add({
     'https://github.com/nvim-treesitter/nvim-treesitter',
     'https://github.com/nvim-treesitter/nvim-treesitter-textobjects',
-    'https://github.com/MeanderingProgrammer/treesitter-modules.nvim',
   })
 
   local languages = {

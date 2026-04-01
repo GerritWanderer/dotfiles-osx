@@ -10,23 +10,6 @@ local add = vim.pack.add
 local now, now_if_args, later = Config.now, Config.now_if_args, Config.later
 
 -- ┌─────────────────────────┐
--- │ Tree-sitter             │
--- └─────────────────────────┘
-now_if_args(function()
-  require('treesitter-modules').setup({
-    incremental_selection = {
-      enable = true,
-      keymaps = {
-        init_selection    = '<A-i>',
-        node_incremental  = '<A-i>',
-        node_decremental  = '<A-o>',
-        scope_incremental = false,
-      },
-    },
-  })
-end)
-
--- ┌─────────────────────────┐
 -- │ Formatting              │
 -- └─────────────────────────┘
 later(function()
