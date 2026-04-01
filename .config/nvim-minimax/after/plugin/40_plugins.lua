@@ -143,7 +143,11 @@ later(function()
       find_files = { hidden = true },
       live_grep  = { additional_args = { '--hidden' } },
     },
+    extensions = {
+      fzf = {},
+    },
   })
+  require('telescope').load_extension('fzf')
 end)
 
 -- ┌─────────────────────────┐
