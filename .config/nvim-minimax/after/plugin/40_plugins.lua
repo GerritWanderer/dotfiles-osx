@@ -35,12 +35,12 @@ later(function()
       lsp_format = 'fallback',
     },
     formatters_by_ft = {
-      javascript      = { 'prettier' },
-      javascriptreact = { 'prettier' },
-      typescript      = { 'prettier' },
-      typescriptreact = { 'prettier' },
-      json            = { 'prettier' },
-      jsonc           = { 'prettier' },
+      javascript      = { 'biome' },
+      javascriptreact = { 'biome' },
+      typescript      = { 'biome' },
+      typescriptreact = { 'biome' },
+      json            = { 'biome' },
+      jsonc           = { 'biome' },
       css             = { 'prettier' },
       html            = { 'prettier' },
       markdown        = { 'prettier' },
@@ -176,53 +176,6 @@ now(function()
         end,
       })
       vim.keymap.set('n', 'q', modal.close, { buffer = b, nowait = true, desc = 'Close scratch' })
-      return b
-    end,
-  })
-end)
-
--- ┌─────────────────────────┐
--- │ Daily Note              │
--- └─────────────────────────┘
--- Open today's daily note in a floating window, toggled with <leader>dn.
--- Path mirrors the Obsidian structure: ~/Documents/notes/00-Daily/YYYY/MM-Month/YYYY-MM-DD-Weekday.md
-now(function()
-  local daily_file_cached = nil
-  local daily_augroup     = vim.api.nvim_create_augroup('MiniMaxDailyNote', { clear = true })
-
-  local get_daily_file = function()
-    return string.format(
-      '%s/00-Daily/%s/%s-%s/%s-%s.md',
-      vim.fn.expand('~/Documents/notes'),
-      os.date('%Y'),
-      os.date('%m'),
-      os.date('%B'),
-      os.date('%Y-%m-%d'),
-      os.date('%A')
-    )
-  end
-
-  Config.open_daily_note = Config.make_modal({
-    title             = function() return os.date('%Y-%m-%d') end,
-    should_invalidate = function(_buf) return get_daily_file() ~= daily_file_cached end,
-    create_buf        = function(modal)
-      local daily_file = get_daily_file()
-      daily_file_cached = daily_file
-      vim.fn.mkdir(vim.fn.fnamemodify(daily_file, ':h'), 'p')
-      local b = vim.fn.bufadd(daily_file)
-      vim.fn.bufload(b)
-      vim.bo[b].buflisted = false
-      vim.bo[b].filetype  = 'markdown'
-      vim.api.nvim_create_autocmd('BufLeave', {
-        group    = daily_augroup,
-        buffer   = b,
-        callback = function()
-          if vim.bo[b].modified then
-            vim.api.nvim_buf_call(b, function() vim.cmd('silent write') end)
-          end
-        end,
-      })
-      vim.keymap.set('n', 'q', modal.close, { buffer = b, nowait = true, desc = 'Close daily note' })
       return b
     end,
   })
