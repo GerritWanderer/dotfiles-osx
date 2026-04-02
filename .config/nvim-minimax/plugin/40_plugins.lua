@@ -116,7 +116,7 @@ later(function() add({ 'https://github.com/mrjones2014/smart-splits.nvim' }) end
 -- ┌─────────────────────────┐
 -- │ Completion              │
 -- └─────────────────────────┘
-later(function() add({ { src = 'https://github.com/Saghen/blink.cmp', version = 'v1.10.0' } }) end)
+later(function() add({ { src = 'https://github.com/Saghen/blink.cmp', version = 'v1.10.1' } }) end)
 
 -- ┌─────────────────────────┐
 -- │ Jump / navigation       │
