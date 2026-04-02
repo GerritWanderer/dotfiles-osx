@@ -80,17 +80,31 @@ now(function()
     'https://github.com/MunifTanjim/nui.nvim',
   })
   require('noice').setup({
-    notify = { enabled = false },
+    notify = { enabled = true },
     lsp = {
       override = {
-        ['vim.lsp.util.convert_input_to_markdown_lines'] = true,
-        ['vim.lsp.util.stylize_markdown'] = true,
+        ["vim.lsp.util.convert_input_to_markdown_lines"] = true,
+        ["vim.lsp.util.stylize_markdown"] = true,
+        ["cmp.entry.get_documentation"] = true,
+      },
+    },
+    routes = {
+      {
+        filter = {
+          event = "msg_show",
+          any = {
+            { find = "%d+L, %d+B" },
+            { find = "; after #%d+" },
+            { find = "; before #%d+" },
+          },
+        },
+        view = "mini",
       },
     },
     presets = {
-      bottom_search         = true,  -- classic bottom search bar
-      command_palette       = true,  -- cmdline and popupmenu positioned together
-      long_message_to_split = true,  -- long messages go to a split
+      bottom_search = true,
+      command_palette = true,
+      long_message_to_split = true,
     },
   })
 end)
