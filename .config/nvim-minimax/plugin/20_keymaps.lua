@@ -215,7 +215,8 @@ nmap_leader('qq', '<Cmd>quitall<CR>', 'Quit Neovim')
 -- - `<Leader>oz` - toggle between "zoomed" and regular view of current buffer
 nmap_leader('or', '<Cmd>lua MiniMisc.resize_window()<CR>', 'Resize to default width')
 nmap_leader('ot', '<Cmd>lua MiniTrailspace.trim()<CR>',    'Trim trailspace')
-nmap_leader('oz', '<Cmd>lua MiniMisc.zoom()<CR>',          'Zoom toggle')
+-- nmap_leader('oz', '<Cmd>lua MiniMisc.zoom()<CR>',          'Zoom toggle')
+nmap_leader('oz', '<Cmd>lua Config.toggle_zen()<CR>',          'Zoom toggle')
 
 -- s is for 'Session'. Common usage:
 -- - `<Leader>sn` - start new session
