@@ -114,8 +114,11 @@ later(function() add({ 'https://github.com/folke/snacks.nvim' }) end)
 later(function() add({ 'https://github.com/mrjones2014/smart-splits.nvim' }) end)
 
 -- ┌─────────────────────────┐
+-- │ Completion              │
+-- └─────────────────────────┘
+later(function() add({ { src = 'https://github.com/Saghen/blink.cmp', version = 'v1.10.0' } }) end)
+
+-- ┌─────────────────────────┐
 -- │ Jump / navigation       │
 -- └─────────────────────────┘
 later(function() add({ 'https://github.com/folke/flash.nvim' }) end)
-
-

@@ -10,6 +10,63 @@ local add = vim.pack.add
 local now, now_if_args, later = Config.now, Config.now_if_args, Config.later
 
 -- ┌─────────────────────────┐
+-- │ Completion              │
+-- └─────────────────────────┘
+later(function()
+  require('blink.cmp').setup({
+    -- Use blink's built-in snippet handling (LSP snippets + friendly-snippets)
+    snippets = { preset = 'default' },
+
+    appearance = {
+      -- Correct icon alignment for Nerd Font Mono
+      nerd_font_variant = 'mono',
+    },
+
+    sources = {
+      default = { 'lsp', 'path', 'snippets', 'buffer' },
+    },
+
+    keymap = {
+      -- <CR> confirms, <Tab>/<S-Tab> navigate — matches old mini.completion behavior
+      preset = 'enter',
+      -- Also allow <C-y> to confirm (vim-native muscle memory)
+      ['<C-y>'] = { 'select_and_accept' },
+    },
+
+    completion = {
+      menu = {
+        draw = {
+          -- Treesitter-based syntax highlighting in completion menu for LSP items
+          treesitter = { 'lsp' },
+        },
+      },
+      -- Show documentation popup alongside the completion menu
+      documentation = { auto_show = true, auto_show_delay_ms = 200 },
+      -- No ghost text
+      ghost_text = { enabled = false },
+    },
+    fuzzy = { implementation = "lua" },
+    cmdline = {
+      enabled = true,
+      keymap = { preset = 'cmdline' },
+      completion = {
+        list = { selection = { preselect = false } },
+        -- Only auto-show menu for : commands, not / or ?
+        menu = {
+          auto_show = function(ctx) return vim.fn.getcmdtype() == ':' end,
+        },
+      },
+    },
+
+    -- Advertise blink.cmp capabilities to LSP servers
+    -- (replaces MiniCompletion.get_lsp_capabilities())
+  })
+
+  -- Register blink.cmp capabilities with all LSP servers
+  vim.lsp.config('*', { capabilities = require('blink.cmp').get_lsp_capabilities() })
+end)
+
+-- ┌─────────────────────────┐
 -- │ Formatting              │
 -- └─────────────────────────┘
 later(function()
