@@ -23,13 +23,6 @@ end
 -- Clear hlsearch on Escape
 nmap('<Esc>', '<Esc><Cmd>nohlsearch<CR>', 'Escape and clear hlsearch')
 
--- Save file
-vim.keymap.set({ 'n', 'i', 'x' }, '<C-s>', '<Cmd>write<CR><Esc>', { desc = 'Save file' })
-
--- Buffer navigation
-nmap('<S-h>', '<Cmd>bprevious<CR>', 'Prev buffer')
-nmap('<S-l>', '<Cmd>bnext<CR>',     'Next buffer')
-
 -- Paste linewise before/after current line
 -- Usage: `yiw` to yank a word and `]p` to put it on the next line.
 nmap('[p', '<Cmd>exe "iput! " . v:register<CR>', 'Paste Above')
@@ -67,6 +60,7 @@ nmap(']p', '<Cmd>exe "iput "  . v:register<CR>', 'Paste Below')
 -- Add an entry if you create a new group.
 Config.leader_group_clues = {
   { mode = 'n', keys = '<Leader>b', desc = '+Buffer' },
+  { mode = 'n', keys = '<Leader>e', desc = 'Explorer' },
   { mode = 'n', keys = '<Leader>f', desc = '+Find' },
   { mode = 'n', keys = '<Leader>g', desc = '+Git' },
   { mode = 'n', keys = '<Leader>l', desc = '+Language' },
@@ -100,12 +94,15 @@ local new_scratch_buffer = function()
   vim.api.nvim_win_set_buf(0, vim.api.nvim_create_buf(true, true))
 end
 
+-- Buffer navigation
+nmap('<S-h>', '<Cmd>bprevious<CR>', 'Prev buffer')
+nmap('<S-l>', '<Cmd>bnext<CR>',     'Next buffer')
 nmap_leader('ba', '<Cmd>b#<CR>',                                 'Alternate')
 nmap_leader('bd', '<Cmd>lua MiniBufremove.delete()<CR>',         'Delete')
 nmap_leader('bD', '<Cmd>lua MiniBufremove.delete(0, true)<CR>',  'Delete!')
 nmap_leader('bs', new_scratch_buffer,                            'Scratch')
-nmap_leader('bw', '<Cmd>lua MiniBufremove.wipeout()<CR>',        'Wipeout')
-nmap_leader('bW', '<Cmd>lua MiniBufremove.wipeout(0, true)<CR>', 'Wipeout!')
+-- nmap_leader('bw', '<Cmd>lua MiniBufremove.wipeout()<CR>',        'Wipeout')
+-- nmap_leader('bW', '<Cmd>lua MiniBufremove.wipeout(0, true)<CR>', 'Wipeout!')
 
 nmap_leader('e', '<Cmd>Neotree toggle source=filesystem<CR>', 'Explorer (neo-tree)')
 nmap_leader('E', '<Cmd>Neotree reveal<CR>',                   'Explorer reveal file')
@@ -153,9 +150,7 @@ nmap_leader('fV', telescope('find_files'),                               'Visit 
 -- - `<Leader>gL` - show Git log of current file
 local git_log_cmd = [[Git log --pretty=format:\%h\ \%as\ │\ \%s --topo-order]]
 local git_log_buf_cmd = git_log_cmd .. ' --follow -- %'
-
-nmap_leader('gg', '<Cmd>lua Config.open_lazygit()<CR>',      'Lazygit')
-
+nmap_leader('gg', '<Cmd>lua Config.open_lazygit()<CR>',     'Lazygit')
 nmap_leader('ga', '<Cmd>Git diff --cached<CR>',             'Added diff')
 nmap_leader('gA', '<Cmd>Git diff --cached -- %<CR>',        'Added diff buffer')
 nmap_leader('gc', '<Cmd>Git commit<CR>',                    'Commit')
@@ -250,8 +245,7 @@ nmap_leader('vL', '<Cmd>lua MiniVisits.remove_label()<CR>',       'Remove label'
 
 -- stylua: ignore end
 
-nmap('<leader>.', '<Cmd>lua Config.open_scratch()<CR>',     'Scratch (floating)')
-
+nmap_leader('.', '<Cmd>lua Config.open_scratch()<CR>',     'Toggle Scratch Buffer (floating)')
 -- incremental selection treesitter/lsp
 vim.keymap.set({ "n", "x", "o" }, "<A-o>", function()
 	if vim.treesitter.get_parser(nil, nil, { error = false }) then
