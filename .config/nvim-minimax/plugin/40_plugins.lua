@@ -36,7 +36,8 @@ now_if_args(function()
       table.insert(filetypes, ft)
     end
   end
-  Config.new_autocmd('FileType', filetypes, function(ev) vim.treesitter.start(ev.buf) end, 'Start tree-sitter')
+  local ts_start = function(ev) vim.treesitter.start(ev.buf) end
+  Config.new_autocmd('FileType', filetypes, ts_start, 'Start tree-sitter')
 end)
 
 -- ┌─────────────────────────┐
