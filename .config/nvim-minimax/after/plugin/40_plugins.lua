@@ -27,10 +27,8 @@ later(function()
     },
 
     keymap = {
-      -- <CR> confirms, <Tab>/<S-Tab> navigate — matches old mini.completion behavior
-      preset = 'enter',
-      -- Also allow <C-y> to confirm (vim-native muscle memory)
-      ['<C-y>'] = { 'select_and_accept' },
+      -- mini.keymap owns <Tab>/<S-Tab>/<CR>/<BS> — blink must not double-bind them
+      preset = 'none',
     },
 
     completion = {

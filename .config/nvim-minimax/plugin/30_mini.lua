@@ -550,14 +550,14 @@ later(function() require('mini.jump').setup() end)
 -- - `:h MiniKeymap.map_combo()` - map combo
 later(function()
   require('mini.keymap').setup()
-  -- Navigate 'mini.completion' menu with `<Tab>` /  `<S-Tab>`
-  -- MiniKeymap.map_multistep('i', '<Tab>', { 'pmenu_next' })
-  -- MiniKeymap.map_multistep('i', '<S-Tab>', { 'pmenu_prev' })
-  -- On `<CR>` try to accept current completion item, fall back to accounting
-  -- for pairs from 'mini.pairs'
-  MiniKeymap.map_multistep('i', '<CR>', { 'minipairs_cr' })
-  -- On `<BS>` just try to account for pairs from 'mini.pairs'
-  MiniKeymap.map_multistep('i', '<BS>', { 'minipairs_bs' })
+  local map = MiniKeymap.map_multistep
+  -- Navigate blink.cmp menu with `<Tab>` / `<S-Tab>`
+  map('i', '<Tab>',   { 'blink_next' })
+  map('i', '<S-Tab>', { 'blink_prev' })
+  -- On `<CR>` accept blink.cmp item if selected, fall back to mini.pairs CR
+  map('i', '<CR>', { 'blink_accept', 'minipairs_cr' })
+  -- On `<BS>` account for pairs from 'mini.pairs'
+  map('i', '<BS>', { 'minipairs_bs' })
 end)
 
 -- Window with text overview. It is displayed on the right hand side. Can be used
