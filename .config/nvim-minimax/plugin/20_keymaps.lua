@@ -235,12 +235,25 @@ nmap_leader('tt', '<Cmd>vertical term<CR>',   'Terminal (vertical)')
 -- - `<Leader>vv` - add    "core" label to current file.
 -- - `<Leader>vV` - remove "core" label to current file.
 -- - `<Leader>vc` - pick among all files with "core" label.
-nmap_leader('vc', snacks('recent'),  'Core visits (all)')
-nmap_leader('vC', snacks('files'),   'Core visits (cwd)')
+local mini_visits_picker = function(label, cwd)
+  return function()
+    local paths = MiniVisits.list_paths(cwd, { filter = label })
+    Snacks.picker.pick({
+      title = label and ('Visits: ' .. label) or 'Visit History',
+      finder = function()
+        return vim.tbl_map(function(path)
+          return { file = path, text = path }
+        end, paths)
+      end,
+      format = 'file',
+    })
+  end
+end
+
+nmap_leader('vc', mini_visits_picker('core'),      'Core visits (all)')
+nmap_leader('vC', mini_visits_picker('core', '.'), 'Core visits (cwd)')
 nmap_leader('vv', '<Cmd>lua MiniVisits.add_label("core")<CR>',    'Add "core" label')
 nmap_leader('vV', '<Cmd>lua MiniVisits.remove_label("core")<CR>', 'Remove "core" label')
-nmap_leader('vl', '<Cmd>lua MiniVisits.add_label()<CR>',          'Add label')
-nmap_leader('vL', '<Cmd>lua MiniVisits.remove_label()<CR>',       'Remove label')
 
 -- incremental selection treesitter/lsp
 vim.keymap.set({ "n", "x", "o" }, "<A-o>", function()
