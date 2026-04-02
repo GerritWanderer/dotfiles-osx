@@ -185,7 +185,6 @@ xmap_leader('lf', '<Cmd>lua require("conform").format()<CR>', 'Format selection'
 -- - `gr` - references
 -- - `gI` - goto implementation
 -- - `gy` - goto type definition
--- - `gD` - goto declaration
 -- - `K`  - hover docs
 -- - `gK` - signature help
 
@@ -252,7 +251,6 @@ nmap_leader('vL', '<Cmd>lua MiniVisits.remove_label()<CR>',       'Remove label'
 -- stylua: ignore end
 
 nmap('<leader>.', '<Cmd>lua Config.open_scratch()<CR>',     'Scratch (floating)')
-nmap('<leader>dn', '<Cmd>lua Config.open_daily_note()<CR>', 'Daily note (floating)')
 
 -- incremental selection treesitter/lsp
 vim.keymap.set({ "n", "x", "o" }, "<A-o>", function()
