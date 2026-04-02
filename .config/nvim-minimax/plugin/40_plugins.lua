@@ -104,6 +104,13 @@ now(function()
 end)
 
 -- ┌─────────────────────────┐
+-- │ Snacks                  │
+-- └─────────────────────────┘
+-- snacks.nvim is installed for lazygit (+ its terminal/notify deps) only.
+-- All other snacks modules are explicitly disabled in 'after/plugin/40_plugins.lua'.
+later(function() add({ 'https://github.com/folke/snacks.nvim' }) end)
+
+-- ┌─────────────────────────┐
 -- │ Smart splits            │
 -- └─────────────────────────┘
 later(function() add({ 'https://github.com/mrjones2014/smart-splits.nvim' }) end)

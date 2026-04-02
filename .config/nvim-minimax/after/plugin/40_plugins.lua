@@ -134,34 +134,50 @@ later(function()
 end)
 
 -- ┌─────────────────────────┐
--- │ Scratchpad              │
+-- │ Snacks                  │
 -- └─────────────────────────┘
--- A persistent floating scratch buffer, toggled with <leader>.
--- Content is saved to disk and survives across Neovim sessions.
-now(function()
-  local scratch_file    = vim.fn.stdpath('data') .. '/scratch.ts'
-  local scratch_augroup = vim.api.nvim_create_augroup('MiniMaxScratch', { clear = true })
-
-  Config.open_scratch = Config.make_modal({
-    title = 'Scratch',
-    create_buf = function(modal)
-      local b = vim.fn.bufadd(scratch_file)
-      vim.fn.bufload(b)
-      vim.bo[b].buflisted = false
-      vim.bo[b].filetype  = 'typescript'
-      vim.api.nvim_create_autocmd('BufLeave', {
-        group    = scratch_augroup,
-        buffer   = b,
-        callback = function()
-          if vim.bo[b].modified then
-            vim.api.nvim_buf_call(b, function() vim.cmd('silent write') end)
-          end
-        end,
-      })
-      vim.keymap.set('n', 'q', modal.close, { buffer = b, nowait = true, desc = 'Close scratch' })
-      return b
-    end,
+-- Only enable the modules lazygit depends on; disable everything else.
+later(function()
+  require('snacks').setup({
+    lazygit  = { enabled = true },
+    notify   = { enabled = true },
+    scratch    = { enabled = true },
+    terminal = { enabled = true },
+    toggle     = { enabled = true },
+    zen        = { enabled = true, toggles = { dim = false }},
+    styles     = {
+      zen = {
+        width = 160,
+        backdrop = { transparent = false },
+      }
+    },
+    -- disable all other snacks modules
+    bigfile    = { enabled = false },
+    bufdelete  = { enabled = false },
+    dashboard  = { enabled = false },
+    debug      = { enabled = false },
+    dim        = { enabled = false },
+    explorer   = { enabled = false },
+    git        = { enabled = false },
+    gitbrowse  = { enabled = false },
+    image      = { enabled = false },
+    indent     = { enabled = false },
+    input      = { enabled = false },
+    layout     = { enabled = false },
+    notifier   = { enabled = false },
+    picker     = { enabled = false },
+    profiler   = { enabled = false },
+    quickfile  = { enabled = false },
+    rename     = { enabled = false },
+    scope      = { enabled = false },
+    scroll     = { enabled = false },
+    statuscolumn = { enabled = false },
+    win        = { enabled = false },
+    words      = { enabled = false },
   })
+  Config.open_lazygit = function() require('snacks').lazygit() end
+  Config.open_scratch = function() require('snacks').scratch() end
+  Config.toggle_zen = function() require('snacks').zen() end
 end)
 
 -- ┌─────────────────────────┐
