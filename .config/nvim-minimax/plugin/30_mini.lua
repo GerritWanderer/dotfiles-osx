@@ -82,7 +82,7 @@ now(function()
   -- Not needed for 'mini.nvim' or MiniMax, but might be useful for others.
   later(MiniIcons.mock_nvim_web_devicons)
 
-  -- Add LSP kind icons. Useful for completion plugins like 'blink.cmp'.
+  -- Add LSP kind icons. Useful for 'mini.completion' or 'blink.cmp'.
   later(MiniIcons.tweak_lsp_kind)
 end)
 
@@ -134,7 +134,61 @@ now(function() require('mini.tabline').setup() end)
 -- Load now if Neovim is started like `nvim -- path/to/file`, otherwise - later.
 -- This ensures a correct behavior for files opened during startup.
 
--- Completion is handled by 'blink.cmp'. See 'plugin/40_plugins.lua'.
+-- Completion and signature help. Implements async "two stage" autocompletion:
+-- - Based on attached LSP servers that support completion.
+-- - Fallback (based on built-in keyword completion) if there is no LSP candidates.
+--
+-- Example usage in Insert mode with attached LSP:
+-- - Start typing text that should be recognized by LSP (like variable name).
+-- - After 100ms a popup menu with candidates appears.
+-- - Press `<Tab>` / `<S-Tab>` to navigate down/up the list. These are set up
+--   in 'mini.keymap'. You can also use `<C-n>` / `<C-p>`.
+-- - During navigation there is an info window to the right showing extra info
+--   that the LSP server can provide about the candidate. It appears after the
+--   candidate stays selected for 100ms. Use `<C-f>` / `<C-b>` to scroll it.
+-- - Navigating to an entry also changes buffer text. If you are happy with it,
+--   keep typing after it. To discard completion completely, press `<C-e>`.
+-- - After pressing special trigger(s), usually `(`, a window appears that shows
+--   the signature of the current function/method. It gets updated as you type
+--   showing the currently active parameter.
+--
+-- Example usage in Insert mode without an attached LSP or in places not
+-- supported by the LSP (like comments):
+-- - Start typing a word that is present in current or opened buffers.
+-- - After 100ms popup menu with candidates appears.
+-- - Navigate with `<Tab>` / `<S-Tab>` or `<C-n>` / `<C-p>`. This also updates
+--   buffer text. If happy with choice, keep typing. Stop with `<C-e>`.
+--
+-- It also works with snippet candidates provided by LSP server. Best experience
+-- when paired with 'mini.snippets' (which is set up in this file).
+-- now_if_args(function()
+--   -- Customize post-processing of LSP responses for a better user experience.
+--   -- Don't show 'Text' suggestions (usually noisy) and show snippets last.
+--   local process_items_opts = { kind_priority = { Text = -1, Snippet = 99 } }
+--   local process_items = function(items, base)
+--     return MiniCompletion.default_process_items(items, base, process_items_opts)
+--   end
+--   require('mini.completion').setup({
+--     lsp_completion = {
+--       -- Without this config autocompletion is set up through `:h 'completefunc'`.
+--       -- Although not needed, setting up through `:h 'omnifunc'` is cleaner
+--       -- (sets up only when needed) and makes it possible to use `<C-u>`.
+--       source_func = 'omnifunc',
+--       auto_setup = false,
+--       process_items = process_items,
+--     },
+--   })
+--
+--   -- Set 'omnifunc' for LSP completion only when needed.
+--   local on_attach = function(ev)
+--     vim.bo[ev.buf].omnifunc = 'v:lua.MiniCompletion.completefunc_lsp'
+--   end
+--   Config.new_autocmd('LspAttach', nil, on_attach, "Set 'omnifunc'")
+--
+--   -- Advertise to servers that Neovim now supports certain set of completion and
+--   -- signature features through 'mini.completion'.
+--   vim.lsp.config('*', { capabilities = MiniCompletion.get_lsp_capabilities() })
+-- end)
 
 -- Navigate and manipulate file system
 --
@@ -144,7 +198,8 @@ now(function() require('mini.tabline').setup() end)
 -- Manipulate files and directories by editing text as regular buffers.
 --
 -- Example usage:
--- - `<Leader>e` - open current working directory
+-- - `<Leader>ed` - open current working directory
+-- - `<Leader>ef` - open directory of current file (needs to be present on disk)
 --
 -- Basic navigation:
 -- - `l` - go in entry at cursor: navigate into directory or open file
@@ -355,6 +410,11 @@ later(function()
   })
 end)
 
+-- Command line tweaks. Improves command line editing with:
+-- - Autocompletion. Basically an automated `:h cmdline-completion`.
+-- - Autocorrection of words as-you-type. Like `:W`->`:w`, `:lau`->`:lua`, etc.
+-- - Autopeek command range (like line number at the start) as-you-type.
+later(function() require('mini.cmdline').setup() end)
 
 -- Tweak and save any color scheme. Contains utility functions to work with
 -- color spaces and color schemes. Example usage:
@@ -465,6 +525,17 @@ end)
 -- - `dt)` - *d*elete *t*ill next closing parenthesis (`)`)
 later(function() require('mini.jump').setup() end)
 
+-- Jump within visible lines to pre-defined spots via iterative label filtering.
+-- Spots are computed by a configurable spotter function. Example usage:
+-- - Lock eyes on desired location to jump
+-- - `<CR>` - start jumping; this shows character labels over target spots
+-- - Type character that appears over desired location; number of target spots
+--   should be reduced
+-- - Keep typing labels until target spot is unique to perform the jump
+--
+-- See also:
+-- - `:h MiniJump2d.gen_spotter` - list of available spotters
+-- later(function() require('mini.jump2d').setup() end)
 
 -- Special key mappings. Provides helpers to map:
 -- - Multi-step actions. Apply action 1 if condition is met; else apply
@@ -479,9 +550,13 @@ later(function() require('mini.jump').setup() end)
 -- - `:h MiniKeymap.map_combo()` - map combo
 later(function()
   require('mini.keymap').setup()
-  -- On `<CR>` account for pairs from 'mini.pairs' (blink.cmp handles its own <CR>)
+  -- Navigate 'mini.completion' menu with `<Tab>` /  `<S-Tab>`
+  -- MiniKeymap.map_multistep('i', '<Tab>', { 'pmenu_next' })
+  -- MiniKeymap.map_multistep('i', '<S-Tab>', { 'pmenu_prev' })
+  -- On `<CR>` try to accept current completion item, fall back to accounting
+  -- for pairs from 'mini.pairs'
   MiniKeymap.map_multistep('i', '<CR>', { 'minipairs_cr' })
-  -- On `<BS>` account for pairs from 'mini.pairs'
+  -- On `<BS>` just try to account for pairs from 'mini.pairs'
   MiniKeymap.map_multistep('i', '<BS>', { 'minipairs_bs' })
 end)
 
@@ -527,11 +602,26 @@ end)
 -- - `<M-h>`/`<M-j>`/`<M-k>`/`<M-l>` - move selection left/down/up/right
 later(function() require('mini.move').setup() end)
 
--- Text edit operators. Disabled in favour of LSP keymaps (gr conflict).
+-- Text edit operators. All operators have mappings for:
+-- - Regular operator (waits for motion/textobject to use)
+-- - Current line action (repeat second character of operator to activate)
+-- - Act on visual selection (type operator in Visual mode)
+--
+-- Example usage:
+-- - `griw` - replace (`gr`) *i*inside *w*ord
+-- - `gmm` - multiple/duplicate (`gm`) current line (extra `m`)
+-- - `vipgs` - *v*isually select *i*nside *p*aragraph and sort it (`gs`)
+-- - `gxiww.` - exchange (`gx`) *i*nside *w*ord with next word (`w` to navigate
+--   to it and `.` to repeat exchange operator)
+-- - `g==` - execute current line as Lua code and replace with its output.
+--   For example, typing `g==` over line `vim.lsp.get_clients()` shows
+--   information about all available LSP clients.
+--
+-- See also:
+-- - `:h MiniOperators-mappings` - overview of how mappings are created
+-- - `:h MiniOperators-overview` - overview of present operators
 -- later(function()
---   require('mini.operators').setup({
---     replace = { prefix = '' },
---   })
+--   require('mini.operators').setup()
 --
 --   -- Create mappings for swapping adjacent arguments. Notes:
 --   -- - Relies on `a` argument textobject from 'mini.ai'.
@@ -556,7 +646,36 @@ later(function()
   require('mini.pairs').setup({ modes = { command = true } })
 end)
 
--- Fuzzy finding is handled by 'snacks.nvim' picker. See 'plugin/40_plugins.lua'.
+-- Pick anything with single window layout and fast matching. This is one of
+-- the main usability improvements as it powers a lot of "find things quickly"
+-- workflows. How to use a picker:
+-- - Start picker, usually with `:Pick <picker-name>` command. Like `:Pick files`.
+--   It shows a single window in the bottom left corner filled with possible items
+--   to choose from. Current item has special full line highlighting.
+--   At the top there is a current query used to filter+sort items.
+-- - Type characters (appear at top) to narrow down items. There is fuzzy matching:
+--   characters may not match one-by-one, but they should be in correct order.
+-- - Navigate down/up with `<C-n>`/`<C-p>`.
+-- - Press `<Tab>` to show item's preview. `<Tab>` again goes back to items.
+-- - Press `<S-Tab>` to show picker's info. `<S-Tab>` again goes back to items.
+-- - Press `<CR>` to choose an item. The exact action depends on the picker: `files`
+--   picker opens a selected file, `help` picker opens help page on selected tag.
+--   To close picker without choosing an item, press `<Esc>`.
+--
+-- Example usage:
+-- - `<Leader>ff` - *f*ind *f*iles; for best performance requires `ripgrep`
+-- - `<Leader>fg` - *f*ind inside files (a.k.a. "to *g*rep"); requires `ripgrep`
+-- - `<Leader>fh` - *f*ind *h*elp tag
+-- - `<Leader>fr` - *r*esume latest picker
+-- - `:h vim.ui.select()` - implemented with 'mini.pick'
+--
+-- See also:
+-- - `:h MiniPick-overview` - overview of picker functionality
+-- - `:h MiniPick-examples` - examples of common setups
+-- - `:h MiniPick.builtin` and `:h MiniExtra.pickers` - available pickers;
+--   Execute one either with Lua function, `:Pick <picker-name>` command, or
+--   one of `<Leader>f` mappings defined in 'plugin/20_keymaps.lua'
+-- later(function() require('mini.pick').setup() end)
 
 -- Manage and expand snippets (templates for a frequently used text).
 -- Typical workflow is to type snippet's (configurable) prefix and expand it
