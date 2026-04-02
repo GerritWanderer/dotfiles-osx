@@ -106,8 +106,6 @@ end)
 -- ┌─────────────────────────┐
 -- │ Snacks                  │
 -- └─────────────────────────┘
--- snacks.nvim is installed for lazygit (+ its terminal/notify deps) only.
--- All other snacks modules are explicitly disabled in 'after/plugin/40_plugins.lua'.
 later(function() add({ 'https://github.com/folke/snacks.nvim' }) end)
 
 -- ┌─────────────────────────┐
@@ -120,23 +118,4 @@ later(function() add({ 'https://github.com/mrjones2014/smart-splits.nvim' }) end
 -- └─────────────────────────┘
 later(function() add({ 'https://github.com/folke/flash.nvim' }) end)
 
--- ┌─────────────────────────┐
--- │ Telescope               │
--- └─────────────────────────┘
-later(function()
-  vim.api.nvim_create_autocmd('PackChanged', {
-    callback = function(ev)
-      local name, kind = ev.data.spec.name, ev.data.kind
-      if name == 'telescope-fzf-native.nvim' and (kind == 'install' or kind == 'update') then
-        vim.system({ 'make' }, { cwd = ev.data.path }):wait()
-      end
-    end,
-  })
 
-  add({
-    'https://github.com/nvim-telescope/telescope.nvim',
-    'https://github.com/nvim-lua/plenary.nvim',
-    'https://github.com/nvim-tree/nvim-web-devicons',
-    'https://github.com/nvim-telescope/telescope-fzf-native.nvim',
-  })
-end)

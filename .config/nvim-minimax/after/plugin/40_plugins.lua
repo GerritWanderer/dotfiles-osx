@@ -111,69 +111,59 @@ later(function()
 end)
 
 -- ┌─────────────────────────┐
--- │ Telescope               │
--- └─────────────────────────┘
-later(function()
-  require('telescope').setup({
-    defaults = {
-      sorting_strategy = 'ascending',
-      layout_config = { prompt_position = 'top' },
-      mappings = {
-        i = { ['<C-n>'] = 'cycle_history_next', ['<C-p>'] = 'cycle_history_prev', ['<C-g>'] = 'to_fuzzy_refine' },
-      },
-    },
-    pickers = {
-      find_files = { hidden = true },
-      live_grep  = { additional_args = { '--hidden' } },
-    },
-    extensions = {
-      fzf = {},
-    },
-  })
-  require('telescope').load_extension('fzf')
-end)
-
--- ┌─────────────────────────┐
 -- │ Snacks                  │
 -- └─────────────────────────┘
--- Only enable the modules lazygit depends on; disable everything else.
 later(function()
   require('snacks').setup({
     lazygit  = { enabled = true },
     notify   = { enabled = true },
-    scratch    = { enabled = true },
+    scratch  = { enabled = true },
     terminal = { enabled = true },
-    toggle     = { enabled = true },
-    zen        = { enabled = true, toggles = { dim = false }},
-    styles     = {
+    toggle   = { enabled = true },
+    zen      = { enabled = true, toggles = { dim = false } },
+    styles   = {
       zen = {
         width = 160,
         backdrop = { transparent = false },
-      }
+      },
+    },
+    picker = {
+      enabled = true,
+      sources = {
+        files = { hidden = true },
+        grep  = { hidden = true },
+      },
+      win = {
+        input = {
+          keys = {
+            ['<C-n>'] = { 'history_back',    mode = { 'i', 'n' } },
+            ['<C-p>'] = { 'history_forward', mode = { 'i', 'n' } },
+          },
+        },
+      },
     },
     -- disable all other snacks modules
-    bigfile    = { enabled = false },
-    bufdelete  = { enabled = false },
-    dashboard  = { enabled = false },
-    debug      = { enabled = false },
-    dim        = { enabled = false },
-    explorer   = { enabled = false },
-    git        = { enabled = false },
-    gitbrowse  = { enabled = false },
-    image      = { enabled = false },
-    indent     = { enabled = false },
-    input      = { enabled = false },
-    layout     = { enabled = false },
-    notifier   = { enabled = false },
-    picker     = { enabled = false },
-    profiler   = { enabled = false },
-    quickfile  = { enabled = false },
-    rename     = { enabled = false },
-    scope      = { enabled = false },
-    scroll     = { enabled = false },
+    bigfile      = { enabled = false },
+    bufdelete    = { enabled = false },
+    dashboard    = { enabled = false },
+    debug        = { enabled = false },
+    dim          = { enabled = false },
+    explorer     = { enabled = false },
+    git          = { enabled = false },
+    gitbrowse    = { enabled = false },
+    image        = { enabled = false },
+    indent       = { enabled = false },
+    input        = { enabled = false },
+    layout       = { enabled = false },
+    notifier     = { enabled = false },
+    profiler     = { enabled = false },
+    quickfile    = { enabled = false },
+    rename       = { enabled = false },
+    scope        = { enabled = false },
+    scroll       = { enabled = false },
     statuscolumn = { enabled = false },
-    win        = { enabled = false },
-    words      = { enabled = false },
+    win          = { enabled = false },
+    words        = { enabled = false },
   })
   Config.open_lazygit = function() require('snacks').lazygit() end
   Config.open_scratch = function() require('snacks').scratch() end

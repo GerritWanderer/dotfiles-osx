@@ -67,7 +67,7 @@ Config.leader_group_clues = {
   { mode = 'n', keys = '<Leader>m', desc = '+Map' },
   { mode = 'n', keys = '<Leader>o', desc = '+Other' },
   { mode = 'n', keys = '<Leader>q', desc = '+Quit' },
-  { mode = 'n', keys = '<Leader>s', desc = '+Session' },
+  { mode = 'n', keys = '<Leader>s', desc = '+Search' },
   { mode = 'n', keys = '<Leader>t', desc = '+Terminal' },
   { mode = 'n', keys = '<Leader>v', desc = '+Visits' },
   { mode = 'x', keys = '<Leader>g', desc = '+Git' },
@@ -108,41 +108,49 @@ nmap_leader('.', '<Cmd>lua Config.open_scratch()<CR>',     'Toggle Scratch Buffe
 nmap_leader('e', '<Cmd>Neotree toggle source=filesystem<CR>', 'Explorer (neo-tree)')
 nmap_leader('E', '<Cmd>Neotree reveal<CR>',                   'Explorer reveal file')
 
--- f is for 'Fuzzy Find'. Common usage:
--- - `<Leader>ff` - find files; for best performance requires `ripgrep`
--- - `<Leader>fg` - find inside files; requires `ripgrep`
--- - `<Leader>fh` - find help tag
--- - `<Leader>fr` - resume latest picker
---
--- All these use 'telescope.nvim'. See `:h telescope.builtin` for an overview.
-local telescope = function(picker, opts)
-  return function() require('telescope.builtin')[picker](opts) end
+-- f is for 'Find'. Common usage:
+-- - `<Leader><space>` - find files
+-- - `<Leader>fb`     - find open buffers
+-- - `<Leader>fv`     - find recent files
+local snacks = function(picker, opts)
+  return function() require('snacks').picker[picker](opts) end
 end
 
-nmap_leader('f/', telescope('search_history'),                           '"/" history')
-nmap_leader('f:', telescope('command_history'),                          '":" history')
-nmap_leader('fa', telescope('git_status'),                               'Added hunks (all)')
-nmap_leader('fA', telescope('git_status'),                               'Added hunks (buf)')
-nmap_leader('fb', telescope('buffers'),                                  'Buffers')
-nmap_leader('fc', telescope('git_commits'),                              'Commits (all)')
-nmap_leader('fC', telescope('git_bcommits'),                             'Commits (buf)')
-nmap_leader('fd', telescope('diagnostics'),                              'Diagnostic workspace')
-nmap_leader('fD', telescope('diagnostics', { bufnr = 0 }),               'Diagnostic buffer')
-nmap_leader(' ', telescope('find_files'),                                'Files')
-nmap_leader('/', telescope('live_grep'),                                 'Grep live (cwd)')
-nmap_leader('fG', telescope('grep_string'),                              'Grep current word')
-nmap_leader('fh', telescope('help_tags'),                                'Help tags')
-nmap_leader('fH', telescope('highlights'),                               'Highlight groups')
-nmap_leader('fl', telescope('live_grep'),                                'Lines (all)')
-nmap_leader('fL', telescope('current_buffer_fuzzy_find'),                'Lines (buf)')
-nmap_leader('fm', telescope('git_status'),                               'Modified hunks (all)')
-nmap_leader('fM', telescope('git_status'),                               'Modified hunks (buf)')
-nmap_leader('fr', telescope('resume'),                                   'Resume')
-nmap_leader('fR', telescope('lsp_references'),                           'References (LSP)')
-nmap_leader('fs', telescope('lsp_dynamic_workspace_symbols'),            'Symbols workspace (live)')
-nmap_leader('fS', telescope('lsp_document_symbols'),                     'Symbols document')
-nmap_leader('fv', telescope('oldfiles'),                                 'Visit paths (all)')
-nmap_leader('fV', telescope('find_files'),                               'Visit paths (cwd)')
+nmap_leader(' ',  snacks('files'),   'Files')
+nmap_leader('fb', snacks('buffers'), 'Buffers')
+nmap_leader('fv', snacks('recent'),  'Recent (all)')
+nmap_leader('fV', snacks('files'),   'Files (cwd)')
+
+-- s is for 'Search'. Common usage:
+-- - `<Leader>/`  - live grep
+-- - `<Leader>sb` - buffer lines
+-- - `<Leader>sd` - diagnostics
+-- - `<Leader>sh` - help pages
+-- - `<Leader>sR` - resume last picker
+nmap_leader('/',  snacks('grep'),                'Grep live')
+nmap_leader('sb', snacks('lines'),               'Buffer Lines')
+nmap_leader('sB', snacks('grep_buffers'),        'Grep Open Buffers')
+vim.keymap.set({ 'n', 'x' }, '<Leader>sw', snacks('grep_word'), { desc = 'Grep word' })
+nmap_leader('s"', snacks('registers'),           'Registers')
+nmap_leader('s/', snacks('search_history'),      'Search History')
+nmap_leader('sa', snacks('autocmds'),            'Autocmds')
+nmap_leader('sc', snacks('command_history'),     'Command History')
+nmap_leader('sC', snacks('commands'),            'Commands')
+nmap_leader('sd', snacks('diagnostics'),         'Diagnostics')
+nmap_leader('sD', snacks('diagnostics_buffer'),  'Buffer Diagnostics')
+nmap_leader('sh', snacks('help'),                'Help Pages')
+nmap_leader('sH', snacks('highlights'),          'Highlights')
+nmap_leader('si', snacks('icons'),               'Icons')
+nmap_leader('sj', snacks('jumps'),               'Jumps')
+nmap_leader('sk', snacks('keymaps'),             'Keymaps')
+nmap_leader('sl', snacks('loclist'),             'Location List')
+nmap_leader('sm', snacks('marks'),               'Marks')
+nmap_leader('sM', snacks('man'),                 'Man Pages')
+nmap_leader('sq', snacks('qflist'),              'Quickfix List')
+nmap_leader('sR', snacks('resume'),              'Resume')
+nmap_leader('ss', snacks('lsp_workspace_symbols'), 'Symbols workspace')
+nmap_leader('sS', snacks('lsp_symbols'),           'Symbols document')
+nmap_leader('su', snacks('undo'),                'Undotree')
 
 -- g is for 'Git'. Common usage:
 -- - `<Leader>gs` - show information at cursor
@@ -194,7 +202,7 @@ remove_lsp_mapping('n', 'grt')
 remove_lsp_mapping('n', 'grx')
 
 nmap('gd', '<Cmd>lua vim.lsp.buf.definition()<CR>',      'Goto Definition')
-nmap('gr', telescope('lsp_references'),                   'References')
+nmap('gr', snacks('lsp_references'),              'References')
 nmap('gI', '<Cmd>lua vim.lsp.buf.implementation()<CR>',  'Goto Implementation')
 nmap('gy', '<Cmd>lua vim.lsp.buf.type_definition()<CR>', 'Goto T[y]pe Definition')
 nmap('K',  '<Cmd>lua vim.lsp.buf.hover()<CR>',           'Hover')
@@ -218,17 +226,6 @@ nmap_leader('or', '<Cmd>lua MiniMisc.resize_window()<CR>', 'Resize to default wi
 nmap_leader('ot', '<Cmd>lua MiniTrailspace.trim()<CR>',    'Trim trailspace')
 nmap_leader('oz', '<Cmd>lua Config.toggle_zen()<CR>',      'Zen toggle')
 
--- s is for 'Session'. Common usage:
--- - `<Leader>sn` - start new session
--- - `<Leader>sr` - read previously started session
--- - `<Leader>sd` - delete previously started session
-local session_new = 'MiniSessions.write(vim.fn.input("Session name: "))'
-
-nmap_leader('sd', '<Cmd>lua MiniSessions.select("delete")<CR>', 'Delete')
-nmap_leader('sn', '<Cmd>lua ' .. session_new .. '<CR>',         'New')
-nmap_leader('sr', '<Cmd>lua MiniSessions.select("read")<CR>',   'Read')
-nmap_leader('sw', '<Cmd>lua MiniSessions.write()<CR>',          'Write current')
-
 -- t is for 'Terminal'
 nmap_leader('tT', '<Cmd>horizontal term<CR>', 'Terminal (horizontal)')
 nmap_leader('tt', '<Cmd>vertical term<CR>',   'Terminal (vertical)')
@@ -237,8 +234,8 @@ nmap_leader('tt', '<Cmd>vertical term<CR>',   'Terminal (vertical)')
 -- - `<Leader>vv` - add    "core" label to current file.
 -- - `<Leader>vV` - remove "core" label to current file.
 -- - `<Leader>vc` - pick among all files with "core" label.
-nmap_leader('vc', telescope('oldfiles'),                               'Core visits (all)')
-nmap_leader('vC', telescope('find_files'),                             'Core visits (cwd)')
+nmap_leader('vc', snacks('recent'),  'Core visits (all)')
+nmap_leader('vC', snacks('files'),   'Core visits (cwd)')
 nmap_leader('vv', '<Cmd>lua MiniVisits.add_label("core")<CR>',    'Add "core" label')
 nmap_leader('vV', '<Cmd>lua MiniVisits.remove_label("core")<CR>', 'Remove "core" label')
 nmap_leader('vl', '<Cmd>lua MiniVisits.add_label()<CR>',          'Add label')
