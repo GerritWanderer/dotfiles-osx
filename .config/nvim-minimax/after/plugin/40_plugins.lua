@@ -108,16 +108,6 @@ later(function()
     explorer = { enabled = true },
     lazygit  = { enabled = true },
     notify   = { enabled = true },
-    scratch  = { enabled = true },
-    terminal = { enabled = true },
-    toggle   = { enabled = true },
-    zen      = { enabled = true, toggles = { dim = false } },
-    styles   = {
-      zen = {
-        width = 160,
-        backdrop = { transparent = false },
-      },
-    },
     picker = {
       enabled = true,
       sources = {
@@ -136,6 +126,17 @@ later(function()
             ['<C-p>'] = { 'history_forward', mode = { 'i', 'n' } },
           },
         },
+      },
+    },
+    scratch  = { enabled = true },
+    terminal = { enabled = true },
+    toggle   = { enabled = true },
+    words    = { enabled = true },
+    zen      = { enabled = true, toggles = { dim = false } },
+    styles   = {
+      zen = {
+        width = 160,
+        backdrop = { transparent = false },
       },
     },
     -- disable all other snacks modules
@@ -158,7 +159,6 @@ later(function()
     scroll       = { enabled = false },
     statuscolumn = { enabled = false },
     win          = { enabled = false },
-    words        = { enabled = false },
   })
   Config.open_lazygit = function() require('snacks').lazygit() end
   Config.open_scratch = function() require('snacks').scratch() end

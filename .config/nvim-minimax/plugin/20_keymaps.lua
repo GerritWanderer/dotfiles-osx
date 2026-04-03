@@ -104,6 +104,8 @@ nmap_leader('bb', '<Cmd>lua MiniBufremove.delete()<CR>',        'Delete')
 -- nmap_leader('bD', '<Cmd>lua MiniBufremove.delete(0, true)<CR>', 'Delete!')
 nmap_leader('bs', new_scratch_buffer,                           'Scratch')
 nmap_leader('.', '<Cmd>lua Config.open_scratch()<CR>',          'Toggle Scratch Buffer (floating)')
+nmap_leader('S', '<Cmd>lua Snacks.scratch.select()<CR>',        'Select Scratch Buffer')
+nmap_leader('n', '<Cmd>lua MiniNotify.show_history()<CR>',      'Notification History')
 -- nmap_leader('bw', '<Cmd>lua MiniBufremove.wipeout()<CR>',        'Wipeout')
 -- nmap_leader('bW', '<Cmd>lua MiniBufremove.wipeout(0, true)<CR>', 'Wipeout!')
 
@@ -119,6 +121,7 @@ local snacks = function(picker, opts)
 end
 
 nmap_leader(' ',  snacks('files'),   'Files')
+nmap_leader(',',  snacks('buffers'), 'Buffers')
 nmap_leader('fb', snacks('buffers'), 'Buffers')
 nmap_leader('fv', snacks('recent'),  'Recent (all)')
 nmap_leader('fV', snacks('files'),   'Files (cwd)')
@@ -205,6 +208,12 @@ nmap('gI', '<Cmd>lua vim.lsp.buf.implementation()<CR>',  'Goto Implementation')
 nmap('gy', '<Cmd>lua vim.lsp.buf.type_definition()<CR>', 'Goto T[y]pe Definition')
 nmap('K',  '<Cmd>lua vim.lsp.buf.hover()<CR>',           'Hover')
 nmap('gK', '<Cmd>lua vim.lsp.buf.signature_help()<CR>',  'Signature Help')
+
+-- Next/prev LSP reference ]] / [[ and <a-n> / <a-p>)
+nmap(']]',    function() Snacks.words.jump( 1, true) end, 'Next Reference')
+nmap('[[',    function() Snacks.words.jump(-1, true) end, 'Prev Reference')
+nmap('<A-n>', function() Snacks.words.jump( 1, true) end, 'Next Reference')
+nmap('<A-p>', function() Snacks.words.jump(-1, true) end, 'Prev Reference')
 
 -- m is for 'Map'. Common usage:
 -- - `<Leader>mt` - toggle map from 'mini.map' (closed by default)
