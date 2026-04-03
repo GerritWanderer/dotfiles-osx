@@ -87,71 +87,6 @@ later(function()
 end)
 
 -- ┌─────────────────────────┐
--- │ Neotree                 │
--- └─────────────────────────┘
-later(function()
-  require('neo-tree').setup({
-    sources = { 'filesystem', 'buffers', 'git_status' },
-    open_files_do_not_replace_types = { 'terminal', 'qf' },
-
-    filesystem = {
-      bind_to_cwd = false,
-      use_libuv_file_watcher = true,
-      follow_current_file = { enabled = true, leave_dirs_open = true },
-      filtered_items = {
-        visible = true,
-        show_hidden_count = true,
-        hide_dotfiles = false,
-        hide_gitignored = true,
-        hide_by_name = { 'node_modules', 'git' },
-        never_show = { '.git' },
-      },
-    },
-
-    buffers = {
-      follow_current_file = { enabled = true, leave_dirs_open = true },
-    },
-
-    window = {
-      mappings = {
-        ['<space>'] = 'none',
-        ['s']       = false,
-        ['h']       = 'close_node',
-        ['l']       = function(state)
-          local node = state.tree:get_node()
-          if node.type == 'directory' then
-            state.commands['toggle_node'](state)
-          else
-            local neo_win = vim.api.nvim_get_current_win()
-            state.commands['open'](state)
-            vim.api.nvim_set_current_win(neo_win)
-          end
-        end,
-        ['<cr>']    = function(state)
-          state.commands['open'](state)
-          require('neo-tree.command').execute({ action = 'close' })
-        end,
-      },
-    },
-
-    default_component_configs = {
-      indent = {
-        with_expanders       = true,
-        expander_collapsed   = '',
-        expander_expanded    = '',
-        expander_highlight   = 'NeoTreeExpander',
-      },
-      git_status = {
-        symbols = {
-          unstaged = '󰄱',
-          staged   = '',
-        },
-      },
-    },
-  })
-end)
-
--- ┌─────────────────────────┐
 -- │ Jump / navigation       │
 -- └─────────────────────────┘
 -- Note: default flash uses `s` which conflicts with 'mini.surround', so `S` is used.
@@ -170,6 +105,7 @@ end)
 -- └─────────────────────────┘
 later(function()
   require('snacks').setup({
+    explorer = { enabled = true },
     lazygit  = { enabled = true },
     notify   = { enabled = true },
     scratch  = { enabled = true },
@@ -185,6 +121,11 @@ later(function()
     picker = {
       enabled = true,
       sources = {
+        explorer = {
+          auto_close = true,
+          hidden = true,
+          ignored = true
+        },
         files = { hidden = true },
         grep  = { hidden = true },
       },
@@ -203,7 +144,6 @@ later(function()
     dashboard    = { enabled = false },
     debug        = { enabled = false },
     dim          = { enabled = false },
-    explorer     = { enabled = false },
     git          = { enabled = false },
     gitbrowse    = { enabled = false },
     image        = { enabled = false },

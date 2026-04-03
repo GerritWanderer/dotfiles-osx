@@ -59,17 +59,6 @@ end)
 later(function() add({ 'https://github.com/stevearc/conform.nvim' }) end)
 
 -- ┌─────────────────────────┐
--- │ Neotree                 │
--- └─────────────────────────┘
-later(function()
-  add({
-    'https://github.com/nvim-neo-tree/neo-tree.nvim',
-    'https://github.com/nvim-lua/plenary.nvim',
-    'https://github.com/MunifTanjim/nui.nvim',
-  })
-end)
-
--- ┌─────────────────────────┐
 -- │ UI enhancements         │
 -- └─────────────────────────┘
 -- Must be set up before first draw to intercept startup messages.
