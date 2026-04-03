@@ -68,7 +68,7 @@ Config.leader_group_clues = {
   { mode = 'n', keys = '<Leader>o', desc = '+Other' },
   { mode = 'n', keys = '<Leader>q', desc = '+Quit' },
   { mode = 'n', keys = '<Leader>s', desc = '+Search' },
-  { mode = 'n', keys = '<Leader>t', desc = '+Terminal' },
+  -- { mode = 'n', keys = '<Leader>t', desc = '+Terminal' },
   { mode = 'n', keys = '<Leader>v', desc = '+Visits' },
   { mode = 'x', keys = '<Leader>g', desc = '+Git' },
   { mode = 'x', keys = '<Leader>l', desc = '+Language' },
@@ -223,8 +223,8 @@ nmap_leader('ot', '<Cmd>lua MiniTrailspace.trim()<CR>',    'Trim trailspace')
 nmap_leader('oz', '<Cmd>lua Config.toggle_zen()<CR>',      'Zen toggle')
 
 -- t is for 'Terminal'
-nmap_leader('tT', '<Cmd>horizontal term<CR>', 'Terminal (horizontal)')
-nmap_leader('tt', '<Cmd>vertical term<CR>',   'Terminal (vertical)')
+-- nmap_leader('tT', '<Cmd>horizontal term<CR>', 'Terminal (horizontal)')
+-- nmap_leader('tt', '<Cmd>vertical term<CR>',   'Terminal (vertical)')
 
 -- v is for 'Visits'. Common usage:
 -- - `<Leader>vv` - add    "core" label to current file.
