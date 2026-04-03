@@ -20,7 +20,8 @@ local remove_lsp_mapping = function(mode, lhs)
   vim.keymap.del(mode, lhs)
 end
 
--- Clear hlsearch on Escape
+-- Clear hlsearch on Escape (n, i, s modes - like LazyVim)
+vim.keymap.set({ 'i', 's' }, '<Esc>', '<Esc><Cmd>nohlsearch<CR>', { desc = 'Escape and clear hlsearch' })
 nmap('<Esc>', '<Esc><Cmd>nohlsearch<CR>', 'Escape and clear hlsearch')
 
 -- Paste linewise before/after current line
