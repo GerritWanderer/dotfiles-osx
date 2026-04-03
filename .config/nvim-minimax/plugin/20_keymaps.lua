@@ -107,7 +107,7 @@ nmap_leader('.', '<Cmd>lua Config.open_scratch()<CR>',          'Toggle Scratch 
 -- nmap_leader('bw', '<Cmd>lua MiniBufremove.wipeout()<CR>',        'Wipeout')
 -- nmap_leader('bW', '<Cmd>lua MiniBufremove.wipeout(0, true)<CR>', 'Wipeout!')
 
-nmap_leader('e', '<Cmd>lua Snacks.explorer()<CR>', 'Explorer')
+nmap_leader('e', '<Cmd>lua Snacks.explorer()<CR>',        'Explorer')
 nmap_leader('E', '<Cmd>lua Snacks.explorer.reveal()<CR>', 'Explorer reveal')
 
 -- f is for 'Find'. Common usage:
