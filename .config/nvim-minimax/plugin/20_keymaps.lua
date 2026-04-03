@@ -97,11 +97,12 @@ end
 -- Buffer navigation
 nmap('<S-h>', '<Cmd>bprevious<CR>', 'Prev buffer')
 nmap('<S-l>', '<Cmd>bnext<CR>',     'Next buffer')
-nmap_leader('ba', '<Cmd>b#<CR>',                                 'Alternate')
-nmap_leader('bd', '<Cmd>lua MiniBufremove.delete()<CR>',         'Delete')
-nmap_leader('bD', '<Cmd>lua MiniBufremove.delete(0, true)<CR>',  'Delete!')
-nmap_leader('bs', new_scratch_buffer,                            'Scratch')
-nmap_leader('.', '<Cmd>lua Config.open_scratch()<CR>',     'Toggle Scratch Buffer (floating)')
+nmap_leader('ba', '<Cmd>b#<CR>',                                'Alternate')
+nmap_leader('`', '<Cmd>b#<CR>',                                'Alternate')
+nmap_leader('bb', '<Cmd>lua MiniBufremove.delete()<CR>',        'Delete')
+-- nmap_leader('bD', '<Cmd>lua MiniBufremove.delete(0, true)<CR>', 'Delete!')
+nmap_leader('bs', new_scratch_buffer,                           'Scratch')
+nmap_leader('.', '<Cmd>lua Config.open_scratch()<CR>',          'Toggle Scratch Buffer (floating)')
 -- nmap_leader('bw', '<Cmd>lua MiniBufremove.wipeout()<CR>',        'Wipeout')
 -- nmap_leader('bW', '<Cmd>lua MiniBufremove.wipeout(0, true)<CR>', 'Wipeout!')
 
